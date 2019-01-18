@@ -48,16 +48,11 @@ cp -r /rpi-firmware/modules /mnt/rootfs/lib/
 cp -r /rpi-firmware/boot/* /mnt/bootfs/
 
 cat > /mnt/bootfs/config.txt << EOF
-kernel=kernel.img
-arm_freq=800
-core_freq=250
-sdram_freq=400
-over_voltage=0
-gpu_mem=16
+enable_uart=1
 EOF
 
 cat > /mnt/bootfs/cmdline.txt << EOF
-dwc_otg.lpm_enable=0 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait
+dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait quiet
 EOF
 
 umount /mnt/bootfs
