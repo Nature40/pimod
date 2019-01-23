@@ -3,29 +3,42 @@
 configuration file from QEMU-based from your host system.
 
 
-## Install
-### Docker
-A simple option is running *pimod* within a Docker container.
-
+## Installation, Usage
+### Debian
 ```bash
-$ docker build -t pimod .
+$ sudo apt-get install -y kpartx proot qemu qemu-user-static
 
 $ cat Pifile
-FROM /raspbian.img
-TO /rpi-out.img
+FROM 2018-11-13-raspbian-stretch-lite.img
+TO rpi-out.img
 
-PUMP 200
+PUMP 100
+
 ENABLE_UART
 
 RUN apt-get update
 RUN apt-get install -y sl
 
-$ touch rpi-out.img
-$ docker run -t --rm --privileged \
-  -v `pwd`/Pifile:/Pifile \
-  -v ~/Downloads/2018-11-13-raspbian-stretch-lite.img:/raspbian.img \
-  -v `pwd`/rpi-out.img:/rpi-out.img \
-  pimod
+$ sudo ./pimod.sh Pifile
+```
+
+
+### Docker
+```bash
+$ docker build -t pimod .
+
+$ cat Pifile
+FROM /2018-11-13-raspbian-stretch-lite.img
+TO /rpi-out.img
+
+PUMP 100
+
+ENABLE_UART
+
+RUN apt-get update
+RUN apt-get install -y sl
+
+$ ./pimod-docker.sh Pifile ~/Downloads/2018-11-13-raspbian-stretch-lite.img rpi-out.img
 ```
 
 
@@ -64,23 +77,6 @@ executed in different stages.
 - `RUN` executes a command in the chrooted image.
 
   Usage: `RUN CMD PARAMS...`
-
-
-### Example Pifile
-```
-FROM /result/2018-11-13-raspbian-stretch-lite.img
-TO /result/rpi.img
-
-PUMP 200
-
-ENABLE_UART
-
-INSTALL 755 /result/foo.sh /bin/foo
-
-RUN uname -a
-RUN apt-get update
-RUN apt-get install -y sl
-```
 
 
 ## Notable Mentions
