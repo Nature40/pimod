@@ -1,0 +1,9 @@
+FROM /result/2018-11-13-raspbian-stretch-lite.img
+
+PUMP 200
+
+ENABLE_UART
+
+RUN uname -a
+RUN apt-get update
+RUN apt-get install -y sl

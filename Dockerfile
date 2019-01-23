@@ -3,8 +3,11 @@ FROM debian:stretch-slim
 RUN apt-get update && \
   apt-get install -y binfmt-support kpartx parted proot qemu qemu-user-static
 
-COPY builder.sh /
+COPY 00-commands.sh /
+COPY 10-setup.sh /
+COPY 20-prepare.sh /
+COPY 30-chroot.sh /
+COPY pimod.sh /
+COPY Pifile /
 
-RUN chmod +x /builder.sh
-
-CMD ./builder.sh
+CMD ./pimod.sh /Pifile

@@ -17,22 +17,6 @@ umount_image() {
   dmsetup remove_all
 }
 
-# pump_image increases the size of the given image and fixes its partition
-# table.
-# Usage: pump_image PATH_TO_IMAGE PUMP_SIZE_IN_MB
-pump_image() {
-  dd if=/dev/zero bs=1M count=$2 >> $1
-
-  local loop=`mount_image $1`
-
-  e2fsck -f "/dev/mapper/${loop}p2"
-  resize2fs "/dev/mapper/${loop}p2"
-
-  fdisk -l "/dev/${loop}"
-
-  umount_image $1
-}
-
 # chroot_setup mounts the given image file and prepares a chroot.
 # Usage: chroot_setup PATH_TO_IMAGE
 chroot_setup() {
@@ -64,22 +48,35 @@ chroot_teardown() {
   umount_image $1
 }
 
-# chroot_exec executes a command in the chroot, created with chroot_setup.
-# Usage: chroot_exec CMD
-chroot_exec() {
-  proot -0 -q qemu-arm-static -w / -r /mnt/rpi $@
+# execute_pifile runs the given Pifile.
+# Usage: execute_pifile PIFILE
+execute_pifile() {
+  if [ -z $1 ] || [ ! -f $1 ]; then
+    echo "No given file or file does not exists"
+    return 1
+  fi
+
+  bash -n $1
+
+  stages=("10-setup.sh" "20-prepare.sh" "30-chroot.sh")
+  for stage in "${stages[@]}"; do
+    . 00-commands.sh
+    . $stage
+
+    pre_stage
+    . $1
+    post_stage
+  done
 }
 
+
+# TODO: check if this is necessary
 update-binfmts --enable qemu-arm
 
-pump_image "/result/rpi.img" 500
 
-chroot_setup "/result/rpi.img"
+if [ -z $1 ]; then
+  echo "Usage: $0 Pifile"
+  exit 1
+fi
 
-chroot_exec uname -a
-chroot_exec apt-get update
-chroot_exec apt-get install -y sl
-
-echo enable_uart=1 >> /mnt/rpi/boot/config.txt
-
-chroot_teardown "/result/rpi.img"
+execute_pifile $1
