@@ -35,6 +35,10 @@ ENABLE_UART() {
   :
 }
 
+INSTALL() {
+  :
+}
+
 RUN() {
   :
 }

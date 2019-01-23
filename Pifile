@@ -5,6 +5,8 @@ PUMP 200
 
 ENABLE_UART
 
+INSTALL 755 /result/foo.sh /bin/foo
+
 RUN uname -a
 RUN apt-get update
 RUN apt-get install -y sl
