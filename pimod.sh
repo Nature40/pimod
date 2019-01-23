@@ -78,10 +78,6 @@ execute_pifile() {
 }
 
 
-# TODO: check if this is necessary
-update-binfmts --enable qemu-arm
-
-
 if [ -z $1 ]; then
   echo "Usage: $0 Pifile"
   exit 1

@@ -8,8 +8,24 @@ configuration file from QEMU-based from your host system.
 A simple option is running *pimod* within a Docker container.
 
 ```bash
-docker build -t pimod .
-docker run -t --rm --privileged -v `pwd`/result:/result pimod
+$ docker build -t pimod .
+
+$ cat Pifile
+FROM /raspbian.img
+TO /rpi-out.img
+
+PUMP 200
+ENABLE_UART
+
+RUN apt-get update
+RUN apt-get install -y sl
+
+$ touch rpi-out.img
+$ docker run -t --rm --privileged \
+  -v `pwd`/Pifile:/Pifile \
+  -v ~/Downloads/2018-11-13-raspbian-stretch-lite.img:/raspbian.img \
+  -v `pwd`/rpi-out.img:/rpi-out.img \
+  pimod
 ```
 
 

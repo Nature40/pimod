@@ -28,9 +28,5 @@ FROM() {
 # the new image. Existing files will be overridden. If TO is not called, the
 # default DEST_IMG will be rpi.img in the source file's directory.
 TO() {
-  if [[ -f "$1" ]]; then
-    rm "$1"
-  fi
-
   DEST_IMG=$1
 }
