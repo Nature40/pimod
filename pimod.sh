@@ -25,25 +25,33 @@ chroot_setup() {
   local loop_boot="/dev/mapper/${loop}p1"
   local loop_root="/dev/mapper/${loop}p2"
 
-  mkdir -p /mnt/rpi
+  CHROOT_MOUNT=`mktemp -d`
 
-  mount $loop_root /mnt/rpi
-  mount $loop_boot /mnt/rpi/boot
+  mount $loop_root "${CHROOT_MOUNT}/"
+  mount $loop_boot "${CHROOT_MOUNT}/boot"
 
-  mount --bind /dev /mnt/rpi/dev
-  mount --bind /sys /mnt/rpi/sys
-  mount --bind /proc /mnt/rpi/proc
-  mount --bind /dev/pts /mnt/rpi/dev/pts
+  mount --bind /dev "${CHROOT_MOUNT}/dev"
+  mount --bind /sys "${CHROOT_MOUNT}/sys"
+  mount --bind /proc "${CHROOT_MOUNT}/proc"
+  mount --bind /dev/pts "${CHROOT_MOUNT}/dev/pts"
 
-  sed -i 's/^/#/g' /mnt/rpi/etc/ld.so.preload
+  sed -i 's/^/#/g' "${CHROOT_MOUNT}/etc/ld.so.preload"
 }
 
 # chroot_teardown unmounts the given image file, mounted with chroot_setup.
 # Usage: chroot_teardown PATH_TO_IMAGE
 chroot_teardown() {
-  sed -i 's/^#//g' /mnt/rpi/etc/ld.so.preload
+  sed -i 's/^#//g' "${CHROOT_MOUNT}/etc/ld.so.preload"
 
-  umount /mnt/rpi/{dev/pts,proc,sys,dev,boot,}
+  umount "${CHROOT_MOUNT}/dev/pts"
+  umount "${CHROOT_MOUNT}/proc"
+  umount "${CHROOT_MOUNT}/sys"
+  umount "${CHROOT_MOUNT}/dev"
+  umount "${CHROOT_MOUNT}/boot"
+  umount "${CHROOT_MOUNT}/"
+
+  rm -r $CHROOT_MOUNT
+  unset CHROOT_MOUNT
 
   umount_image $1
 }

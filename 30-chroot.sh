@@ -9,8 +9,9 @@ post_stage() {
 # ENABLE_UART enables the UART/serial port of the Pi.
 # Usage: ENABLE_UART
 ENABLE_UART() {
-  grep -qxF "enable_uart=1" /mnt/rpi/boot/config.txt || \
-    echo enable_uart=1 >> /mnt/rpi/boot/config.txt
+  local config="${CHROOT_MOUNT}/boot/config.txt"
+  grep -qxF "enable_uart=1" $config || \
+    echo enable_uart=1 >> $config
 }
 
 # INSTALL installs a given file or directory to the given directory in the
@@ -21,17 +22,17 @@ INSTALL() {
   case "$#" in
     "2")
       if [ -d $1 ]; then
-        install -d "$1" "/mnt/rpi${2}"
+        install -d "$1" "${CHROOT_MOUNT}/${2}"
       else
-        install "$1" "/mnt/rpi${2}"
+        install "$1" "${CHROOT_MOUNT}/${2}"
       fi
       ;;
 
     "3")
       if [ -d $2 ]; then
-        install -d -m $1 "$2" "/mnt/rpi${3}"
+        install -d -m $1 "$2" "${CHROOT_MOUNT}/${3}"
       else
-        install -m $1 "$2" "/mnt/rpi${3}"
+        install -m $1 "$2" "${CHROOT_MOUNT}/${3}"
       fi
       ;;
 
@@ -45,5 +46,5 @@ INSTALL() {
 # RUN executes a command in the chrooted image.
 # Usage: RUN CMD PARAMS...
 RUN() {
-  proot -0 -q qemu-arm-static -w / -r /mnt/rpi $@
+  proot -0 -q qemu-arm-static -w / -r $CHROOT_MOUNT $@
 }
