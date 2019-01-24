@@ -7,7 +7,7 @@ fi
 
 touch `realpath $3`
 docker run -t --rm --privileged \
-  -v `realpath $1`:/Pifile \
-  -v `realpath $2`:/`basename $2` \
-  -v `realpath $3`:/`basename $3` \
+  -v `realpath $1`:/pimod/Pifile \
+  -v `realpath $2`:/pimod/`basename $2` \
+  -v `realpath $3`:/pimod/`basename $3` \
   pimod
