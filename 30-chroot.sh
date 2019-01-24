@@ -41,5 +41,5 @@ INSTALL() {
 # Usage: RUN CMD PARAMS...
 RUN() {
   echo -e "\033[0;32m### RUN $@\033[0m"
-  proot -0 -q qemu-arm-static -w / -r $CHROOT_MOUNT bash -c "$@"
+  proot -0 -q qemu-arm-static -w / -r $CHROOT_MOUNT "$@"
 }
