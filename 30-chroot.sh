@@ -47,6 +47,6 @@ INSTALL() {
 # RUN executes a command in the chrooted image.
 # Usage: RUN CMD PARAMS...
 RUN() {
-  proot -0 -q qemu-arm-static -w / -r $CHROOT_MOUNT $@
   echo -e "\033[0;32m### RUN $@\033[0m"
+  proot -0 -q qemu-arm-static -w / -r $CHROOT_MOUNT "$@"
 }
