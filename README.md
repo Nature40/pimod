@@ -1,6 +1,6 @@
 # pimod, custom*pi*ze your Raspberry Pi image
 *pimod* let you reconfigure your Raspberry Pi images with an easy, Docker-like
-configuration file from QEMU-based from your host system.
+configuration file, QEMU-based from your host system.
 
 
 ## Installation, Usage
@@ -28,8 +28,8 @@ $ sudo ./pimod.sh Pifile
 $ docker build -t pimod .
 
 $ cat Pifile
-FROM /2018-11-13-raspbian-stretch-lite.img
-TO /rpi-out.img
+FROM 2018-11-13-raspbian-stretch-lite.img
+TO rpi-out.img
 
 PUMP 100
 
@@ -56,7 +56,7 @@ executed in different stages.
   contain the new image. Existing files will be overridden. If TO is not called,
   the default `DEST_IMG` will be rpi.img in the source file's directory.
 
-  Usage: `FROM PATH_TO_IMAGE`
+  Usage: `TO PATH_TO_IMAGE`
 
 
 ### Stage 2, Preparation
