@@ -38,6 +38,8 @@ ENABLE_UART
 RUN apt-get update
 RUN apt-get install -y sl
 
+# Extra mounts or other Docker commands, can be passed after the first three
+# parameters.
 $ ./pimod-docker.sh Pifile ~/Downloads/2018-11-13-raspbian-stretch-lite.img rpi-out.img
 ```
 

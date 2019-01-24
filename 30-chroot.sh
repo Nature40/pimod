@@ -22,23 +22,16 @@ INSTALL() {
   echo -e "\033[0;32m### INSTALL $@\033[0m"
   case "$#" in
     "2")
-      if [ -d $1 ]; then
-        install -d "$1" "${CHROOT_MOUNT}/${2}"
-      else
-        install "$1" "${CHROOT_MOUNT}/${2}"
-      fi
+      cp -a "$1" "${CHROOT_MOUNT}/${2}"
       ;;
 
     "3")
-      if [ -d $2 ]; then
-        install -d -m $1 "$2" "${CHROOT_MOUNT}/${3}"
-      else
-        install -m $1 "$2" "${CHROOT_MOUNT}/${3}"
-      fi
+      cp -a "$2" "${CHROOT_MOUNT}/${3}"
+      chmod $1 "${CHROOT_MOUNT}/${3}"
       ;;
 
     *)
-      echo "Usage: INSTALL [MODE] SOURCE DEST"
+      echo "Error: INSTALL [MODE] SOURCE DEST"
       return 1
       ;;
   esac
