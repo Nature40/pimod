@@ -2,6 +2,7 @@
 
 if [ "$#" -ne 3 ]; then
   echo "Usage: $0 Pifile input.img output.img"
+  exit 1
 fi
 
 touch `realpath $3`
