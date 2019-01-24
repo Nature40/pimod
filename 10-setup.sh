@@ -6,7 +6,7 @@ post_stage() {
 
   if [ -z $DEST_IMG ]; then
     DEST_IMG="`dirname $SOURCE_IMG`/rpi.img"
-    echo "Error: DEST_IMG was not set, defaults to $DEST_IMG"
+    echo "DEST_IMG was not set, defaults to $DEST_IMG"
   fi
 
   cp $SOURCE_IMG $DEST_IMG
