@@ -5,6 +5,7 @@ RUN apt-get update && \
 
 RUN mkdir /pimod
 COPY *.sh /pimod/
+ENV PATH="/pimod:${PATH}"
 
 WORKDIR /pimod
-CMD ./pimod.sh Pifile
+CMD pimod.sh Pifile
