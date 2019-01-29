@@ -31,10 +31,6 @@ PUMP() {
 }
 
 # Stage 3x
-ENABLE_UART() {
-  :
-}
-
 INSTALL() {
   :
 }
