@@ -1,4 +1,5 @@
 # PUMP increases the image's size about the given amount of megabytes.
+#
 # Usage: PUMP SIZE_IN_MB
 PUMP() {
   echo -e "\033[0;32m### PUMP $1\033[0m"

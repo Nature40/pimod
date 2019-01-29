@@ -14,7 +14,8 @@ post_stage() {
 }
 
 # FROM sets the SOURCE_IMG variable to the given file. This file will be used
-# as source base file.
+# as the base for the new image.
+#
 # Usage: FROM PATH_TO_IMAGE
 FROM() {
   if [[ ! -f "$1" ]]; then
@@ -26,9 +27,17 @@ FROM() {
   SOURCE_IMG=$1
 }
 
-# TO sets the DEST_IMG variable to the given file. This file will be contain
-# the new image. Existing files will be overridden. If TO is not called, the
-# default DEST_IMG will be rpi.img in the source file's directory.
+# TO sets the DEST_IMG variable to the given file. This file will contain the
+# new image. Existing files will be overridden.
+#
+# Instead of calling TO, the Pifile's filename can also indicate the output
+# file, if the Pifile ends with ".Pifile". The part before this suffix will be
+# the new DEST_IMG.
+#
+# If neither TO is called nor the Pifile indicates the output, DEST_IMG will
+# default to rpi.img in the source file's directory.
+#
+# Usage: TO PATH_TO_IMAGE
 TO() {
   DEST_IMG=$1
 }
