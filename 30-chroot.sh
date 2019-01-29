@@ -6,14 +6,6 @@ post_stage() {
   chroot_teardown $DEST_IMG
 }
 
-# ENABLE_UART enables the UART/serial port of the Pi.
-# Usage: ENABLE_UART
-ENABLE_UART() {
-  local config="${CHROOT_MOUNT}/boot/config.txt"
-  grep -qxF "enable_uart=1" $config || \
-    echo enable_uart=1 >> $config
-}
-
 # INSTALL installs a given file or directory to the given directory in the
 # image. The permission mode (chmod) can be optionally set as the first
 # parameter.

@@ -14,8 +14,6 @@ TO rpi-out.img
 
 PUMP 100
 
-ENABLE_UART
-
 RUN apt-get update
 RUN apt-get install -y sl
 
@@ -32,8 +30,6 @@ FROM 2018-11-13-raspbian-stretch-lite.img
 TO rpi-out.img
 
 PUMP 100
-
-ENABLE_UART
 
 RUN apt-get update
 RUN apt-get install -y sl
@@ -68,9 +64,6 @@ executed in different stages.
 
 
 ### Stage 3, chroot
-- `ENABLE_UART` enables the UART/serial port of the Pi.
-
-  Usage: `ENABLE_UART`
 - `INSTALL` installs a given file or directory to the given directory in the
   image. The permission mode (chmod) can be optionally set as the first
   parameter.
