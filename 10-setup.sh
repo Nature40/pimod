@@ -8,6 +8,7 @@ post_stage() {
     DEST_IMG="`dirname $SOURCE_IMG`/rpi.img"
     echo "DEST_IMG was not set, defaults to $DEST_IMG"
   fi
+  echo -e "\033[0;32m### TO $DEST_IMG\033[0m"
 
   cp $SOURCE_IMG $DEST_IMG
 }
@@ -29,6 +30,5 @@ FROM() {
 # the new image. Existing files will be overridden. If TO is not called, the
 # default DEST_IMG will be rpi.img in the source file's directory.
 TO() {
-  echo -e "\033[0;32m### TO $1\033[0m"
   DEST_IMG=$1
 }

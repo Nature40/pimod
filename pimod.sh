@@ -56,6 +56,20 @@ chroot_teardown() {
   umount_image $1
 }
 
+# inspect_pifile_name checks the name of the given Pifile (first parameter)
+# and sets the internal DEST_IMG variable to the first part of this filename,
+# if the filename has the format of XYZ.Pifile, with XYZ being alphanumeric
+# or signs.
+# Usage: inspect_pifile_name PIFILE_NAME
+inspect_pifile_name() {
+  # local always returns 0..
+  to_name=`echo "$1" \
+    | sed -E '/\.Pifile$/!{q1}; {s/^([[:graph:]]*)\.Pifile$/\1/}'`
+
+  [ $? -eq 0 ] && DEST_IMG="${to_name}.img" || unset DEST_IMG
+  unset to_name
+}
+
 # execute_pifile runs the given Pifile.
 # Usage: execute_pifile PIFILE
 execute_pifile() {
@@ -63,6 +77,8 @@ execute_pifile() {
     echo "No given file or file does not exists"
     return 1
   fi
+
+  inspect_pifile_name $1
 
   bash -n $1
 
