@@ -34,7 +34,9 @@ $ ./pimod-docker.sh \
 
 
 ## Pifile
-The `Pifile` should contain commands to modify the image.
+The *Pifile* contains commands to modify the image. However, the *Pifile*
+itself is just a Bash script and the commands are functions, which are loaded
+in different stages.
 
 
 ### Example
@@ -48,7 +50,7 @@ RUN raspi-config nonint do_serial 0
 
 RUN apt-get update
 RUN bash -c 'DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade'
-RUN apt-get install sl
+RUN apt-get install -y sl
 
 
 # The Upgrade.Pifile will create, called by the following command, a new
@@ -57,11 +59,14 @@ RUN apt-get install sl
 # and sl installed.
 
 # Docker:
-./pimod-docker.sh \
+$ ./pimod-docker.sh \
   Upgrade.Pifile ~/Downloads/2018-11-13-raspbian-stretch-lite.img Upgrade.img
 
 # Plain:
-sudo ./pimod.sh Upgrade.Pifile
+$ sudo ./pimod.sh Upgrade.Pifile
+
+# Write the new image to a SD card present at /dev/sdc.
+$ dd if=Upgrade.img of=/dev/sdc bs=4M status=progress
 ```
 
 More examples are available in the
@@ -93,7 +98,7 @@ default to *rpi.img* in the source file's directory.
 #### `PUMP`
 `PUMP` increases the image's size about the given amount of megabytes.
 
-Usage: `PUMP SIZE_IN_MB`
+*Usage:* `PUMP SIZE_IN_MB`
 
 
 #### `INSTALL`
@@ -101,7 +106,7 @@ Usage: `PUMP SIZE_IN_MB`
 image. The optionally permission mode (*chmod*) can be set as the first
 parameter.
 
-Usage: `INSTALL [MODE] SOURCE DEST`
+*Usage*: `INSTALL [MODE] SOURCE DEST`
 
 
 #### `RUN`
@@ -115,6 +120,31 @@ RUN bash -c 'hexdump /dev/urandom | head'
 ```
 
 *Usage:* `RUN CMD PARAMS...`
+
+
+### Hacks
+Because the *Pifile* is just a Bash script, some ~~dirty~~ brilliant hacks
+are possible.
+
+
+#### Inherit another Pifile
+Another *Pifile* can be extended by sourcing it in the first line.
+
+```
+source Parent.Pifile
+```
+
+
+#### Bulk execution
+Here documents can be used with the `RUN` command.
+
+```
+RUN <<EOF
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
+apt-get install -y sl
+EOF
+```
 
 
 ## Notable Mentions
