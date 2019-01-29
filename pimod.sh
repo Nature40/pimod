@@ -36,6 +36,9 @@ chroot_setup() {
   mount --bind /dev/pts "${CHROOT_MOUNT}/dev/pts"
 
   sed -i 's/^/#/g' "${CHROOT_MOUNT}/etc/ld.so.preload"
+
+  update-binfmts --enable qemu-arm
+  cp /usr/bin/qemu-arm-static "${CHROOT_MOUNT}/usr/bin/"
 }
 
 # chroot_teardown unmounts the given image file, mounted with chroot_setup.

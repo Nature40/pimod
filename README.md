@@ -6,7 +6,7 @@ configuration file, QEMU-based from your host system.
 ## Installation, Usage
 ### Debian
 ```bash
-$ sudo apt-get install -y kpartx proot qemu qemu-user-static
+$ sudo apt-get install kpartx qemu qemu-user-static binfmt-support
 
 $ cat Pifile
 FROM 2018-11-13-raspbian-stretch-lite.img
