@@ -15,11 +15,11 @@ INSTALL() {
   echo -e "\033[0;32m### INSTALL $@\033[0m"
   case "$#" in
     "2")
-      cp -a "$1" "${CHROOT_MOUNT}/${2}"
+      cp -d -R --preserve=mode "$1" "${CHROOT_MOUNT}/${2}"
       ;;
 
     "3")
-      cp -a "$2" "${CHROOT_MOUNT}/${3}"
+      cp -d -R --preserve=mode "$2" "${CHROOT_MOUNT}/${3}"
       chmod $1 "${CHROOT_MOUNT}/${3}"
       ;;
 
