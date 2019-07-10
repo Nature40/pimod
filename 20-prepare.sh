@@ -5,7 +5,17 @@ PUMP() {
   echo -e "\033[0;32m### PUMP $1\033[0m"
   dd if=/dev/zero bs=1M count=$1 >> $DEST_IMG
 
-  parted -m $DEST_IMG u s resizepart 2 -- 100%
+  TARGET_DETAILS=($(fdisk -l "$DEST_IMG" | tail -n1))
+  (fdisk "$DEST_IMG" || echo "Continue...") <<EOF
+delete
+2
+new
+primary
+2
+${TARGET_DETAILS[1]}
+
+w
+EOF
 
   local loop=`mount_image $DEST_IMG`
 
