@@ -5,6 +5,8 @@ PUMP() {
   echo -e "\033[0;32m### PUMP $1\033[0m"
   dd if=/dev/zero bs=1M count=$1 >> $DEST_IMG
 
+  parted -m $DEST_IMG u s resizepart 2 -- 100%
+
   local loop=`mount_image $DEST_IMG`
 
   e2fsck -f "/dev/mapper/${loop}p2"
