@@ -8,9 +8,14 @@ post_stage() {
     DEST_IMG="`dirname $SOURCE_IMG`/rpi.img"
     echo "DEST_IMG was not set, defaults to $DEST_IMG"
   fi
-  echo -e "\033[0;32m### TO $DEST_IMG\033[0m"
 
-  cp $SOURCE_IMG $DEST_IMG
+  echo -e "\033[0;32m### TO $DEST_IMG\033[0m"
+  if [ $SOURCE_IMG != $DEST_IMG ]; then
+    cp $SOURCE_IMG $DEST_IMG
+  else
+    echo -e "Warning: SOURCE_IMG and DEST_IMG are identical, $DEST_IMG will be overwritten."
+  fi
+
 }
 
 # FROM sets the SOURCE_IMG variable to the given file. This file will be used
