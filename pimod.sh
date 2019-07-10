@@ -57,6 +57,8 @@ chroot_teardown() {
   unset CHROOT_MOUNT
 
   umount_image $1
+
+  update-binfmts --disable qemu-arm
 }
 
 # inspect_pifile_name checks the name of the given Pifile (first parameter)
