@@ -8,6 +8,9 @@ mount_image() {
   kpartx -avs "$1" \
     | sed -E 's/.*(loop[0-9]*)p.*/\1/g' \
     | head -n 1
+  
+  # kpartx -s (syncronous) should take care of this, however it sometimes fails. 
+  udevadm settle
 }
 
 # umount_image unmounts the given image file, mounted with mount_image.
