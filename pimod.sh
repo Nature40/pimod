@@ -6,7 +6,7 @@ set -e
 # Usage: mount_image PATH_TO_IMAGE
 mount_image() {
   kpartx -avs "$1" \
-    | sed -E 's/.*(loop[0-9])p.*/\1/g' \
+    | sed -E 's/.*(loop[0-9]*)p.*/\1/g' \
     | head -n 1
 }
 
