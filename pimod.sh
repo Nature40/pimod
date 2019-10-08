@@ -5,12 +5,17 @@ set -e
 # the name of the loop device (e.g. loop0).
 # Usage: mount_image PATH_TO_IMAGE
 mount_image() {
+  modprobe loop >&2
+
   kpartx -avs "$1" \
+    | tee kpartx.log \
     | sed -E 's/.*(loop[0-9]*)p.*/\1/g' \
     | head -n 1
   
+  cat kpartx.log >&2
+
   # kpartx -s (syncronous) should take care of this, however it sometimes fails. 
-  udevadm settle
+  udevadm settle >&2
 }
 
 # umount_image unmounts the given image file, mounted with mount_image.
