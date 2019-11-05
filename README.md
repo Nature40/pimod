@@ -17,22 +17,6 @@ $ sudo ./pimod.sh Pifile
 ```
 
 
-### Docker
-```bash
-$ docker build -t pimod .
-
-# Extra mounts or additional Docker commands can be passed after the first
-# three parameters. The following example would execute Custom.Pifile into the
-# new Custom.img image with foobar.sh being available at /pimod/foobar.sh
-# inside the container. This file might be used by the Custom.Pifile.
-$ ./pimod-docker.sh \
-  Custom.Pifile \
-  ~/Downloads/2018-11-13-raspbian-stretch-lite.img \
-  Custom.img \
-  -v `pwd`/foobar.sh:/pimod/foobar.sh
-```
-
-
 ## Pifile
 The *Pifile* contains commands to modify the image. However, the *Pifile*
 itself is just a Bash script and the commands are functions, which are loaded
@@ -44,7 +28,7 @@ in different stages.
 $ cat Upgrade.Pifile
 FROM 2018-11-13-raspbian-stretch-lite.img
 
-PUMP 100
+PUMP 100M
 
 RUN raspi-config nonint do_serial 0
 
@@ -96,9 +80,9 @@ default to *rpi.img* in the source file's directory.
 
 
 #### `PUMP`
-`PUMP` increases the image's size about the given amount of megabytes.
+`PUMP` increases the image's size about the given amount (suffixes K, M, G are allowed).
 
-*Usage:* `PUMP SIZE_IN_MB`
+*Usage:* `PUMP SIZE`
 
 
 #### `INSTALL`
@@ -149,6 +133,6 @@ EOF
 
 ## Notable Mentions
 - [Debian Wiki, qemu-user-static](https://wiki.debian.org/RaspberryPi/qemu-user-static)
-- [raspberry-pi-chroot-armv7-qemu.md ](https://gist.github.com/jkullick/9b02c2061fbdf4a6c4e8a78f1312a689)
+- [raspberry-pi-chroot-armv7-qemu.md](https://gist.github.com/jkullick/9b02c2061fbdf4a6c4e8a78f1312a689)
 - [chroot-to-pi.sh](https://gist.github.com/htruong/7df502fb60268eeee5bca21ef3e436eb)
 - [PiShrink](https://github.com/Drewsif/PiShrink)
