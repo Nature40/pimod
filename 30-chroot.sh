@@ -1,9 +1,9 @@
 pre_stage() {
-  chroot_setup $DEST_IMG
+  chroot_setup "${DEST_IMG}" "${IMG_ROOT}"
 }
 
 post_stage() {
-  chroot_teardown $DEST_IMG
+  chroot_teardown "${DEST_IMG}"
 }
 
 # INSTALL installs a given file or directory into the destination in the
@@ -15,16 +15,16 @@ INSTALL() {
   echo -e "\033[0;32m### INSTALL $@\033[0m"
   case "$#" in
     "2")
-      cp -d -R --preserve=mode "$1" "${CHROOT_MOUNT}/${2}"
+      cp -d -R --preserve=mode "${1}" "${CHROOT_MOUNT}/${2}"
       ;;
 
     "3")
-      cp -d -R --preserve=mode "$2" "${CHROOT_MOUNT}/${3}"
-      chmod $1 "${CHROOT_MOUNT}/${3}"
+      cp -d -R --preserve=mode "${2}" "${CHROOT_MOUNT}/${3}"
+      chmod "${1}" "${CHROOT_MOUNT}/${3}"
       ;;
 
     *)
-      echo "Error: INSTALL [MODE] SOURCE DEST"
+      echo -e "\033[0;31m### Error: INSTALL [MODE] SOURCE DEST\033[0m"
       return 1
       ;;
   esac
@@ -38,6 +38,6 @@ INSTALL() {
 #
 # Usage: RUN CMD PARAMS...
 RUN() {
-  echo -e "\033[0;32m### RUN $@\033[0m"
-  chroot $CHROOT_MOUNT "$@"
+  echo -e "\033[0;32m### RUN ${@}\033[0m"
+  chroot "${CHROOT_MOUNT}" "${@}"
 }

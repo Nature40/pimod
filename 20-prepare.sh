@@ -2,27 +2,27 @@
 #
 # Usage: PUMP SIZE_IN_MB
 PUMP() {
-  echo -e "\033[0;32m### PUMP $1\033[0m"
-  dd if=/dev/zero bs=1M count=$1 >> $DEST_IMG
+  echo -e "\033[0;32m### PUMP ${1}\033[0m"
+  dd if=/dev/zero bs=${1} count=1 >> "${DEST_IMG}"
 
-  TARGET_DETAILS=($(fdisk -l "$DEST_IMG" | tail -n1))
-  (fdisk "$DEST_IMG" || echo "Continue...") <<EOF
+  TARGET_DETAILS=($(fdisk -l "${DEST_IMG}" | tail -n1))
+  (fdisk "${DEST_IMG}" || echo "Continue...") <<EOF
 delete
-2
+${IMG_ROOT}
 new
 primary
-2
+${IMG_ROOT}
 ${TARGET_DETAILS[1]}
 
 w
 EOF
 
-  local loop=`mount_image $DEST_IMG`
+  local loop=`mount_image "${DEST_IMG}"`
 
-  e2fsck -f "/dev/mapper/${loop}p2"
-  resize2fs "/dev/mapper/${loop}p2"
+  e2fsck -f "/dev/mapper/${loop}p${IMG_ROOT}"
+  resize2fs "/dev/mapper/${loop}p${IMG_ROOT}"
 
   fdisk -l "/dev/${loop}"
 
-  umount_image $DEST_IMG
+  umount_image "${loop}"
 }
