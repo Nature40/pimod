@@ -7,8 +7,10 @@ if [ -z "${1}" ]; then
   exit 1
 fi
 
-for mod in modules/*.sh; do
-  . "$mod"
+PIMOD_BASE="`dirname $0`"
+
+for mod in ${PIMOD_BASE}/modules/*.sh; do
+  . "${mod}"
 done
 
 execute_pifile "${1}"
