@@ -5,6 +5,8 @@ pre_stage() {
 }
 
 post_stage() {
+  resolv_conf_teardown
+
   chroot_teardown "${DEST_IMG}"
 }
 
