@@ -1,5 +1,7 @@
 pre_stage() {
   chroot_setup "${DEST_IMG}" "${IMG_ROOT}"
+
+  resolv_conf_setup
 }
 
 post_stage() {
