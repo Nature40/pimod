@@ -116,8 +116,8 @@ execute_pifile() {
 
   stages="10-setup.sh 20-prepare.sh 30-chroot.sh"
   for stage in ${stages}; do
-    . 00-commands.sh
-    . "${stage}"
+    . stages/00-commands.sh
+    . "stages/${stage}"
 
     pre_stage
     . "${1}"
