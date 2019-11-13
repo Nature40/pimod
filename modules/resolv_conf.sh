@@ -7,6 +7,8 @@ resolv_conf_setup() {
     return
   fi
 
+  [ ! -d "${CHROOT_MOUNT}/etc" ] && mkdir -p "${CHROOT_MOUNT}/etc"
+
   if [ -L "${resolv_conf}" ]; then
     RESOLV_CONF_BACKUP=`mktemp -u`
     mv "${resolv_conf}" "${RESOLV_CONF_BACKUP}"

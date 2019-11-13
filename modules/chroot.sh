@@ -9,23 +9,31 @@ chroot_setup() {
   local loop_root="/dev/mapper/${LOOP}p${IMG_ROOT}"
   mount "${loop_root}" "${CHROOT_MOUNT}/"
 
-  mount --bind /dev "${CHROOT_MOUNT}/dev"
-  mount --bind /sys "${CHROOT_MOUNT}/sys"
-  mount --bind /proc "${CHROOT_MOUNT}/proc"
-  mount --bind /dev/pts "${CHROOT_MOUNT}/dev/pts"
+  local mnt_targets="/dev /sys /proc /dev/pts"
+  for mnt_target in ${mnt_targets}; do
+    [ ! -d "${CHROOT_MOUNT}${mnt_target}" ] && mkdir -p "${CHROOT_MOUNT}${mnt_target}"
+    mount --bind "${mnt_target}" "${CHROOT_MOUNT}${mnt_target}"
+  done
+
+  #mount --bind /dev "${CHROOT_MOUNT}/dev"
+  #mount --bind /sys "${CHROOT_MOUNT}/sys"
+  #mount --bind /proc "${CHROOT_MOUNT}/proc"
+  #mount --bind /dev/pts "${CHROOT_MOUNT}/dev/pts"
 
   # disable preloading (not working because of missing paths)
   test -f "${CHROOT_MOUNT}/etc/ld.so.preload" && \
     sed -i 's/^/#/g' "${CHROOT_MOUNT}/etc/ld.so.preload"
 
   # copy qemu binaries for selected platforms
+  [ ! -d "${CHROOT_MOUNT}/usr/bin" ] && mkdir -p "${CHROOT_MOUNT}/usr/bin"
+
   for arch in ${QEMU_ARCHS}; do
     cp "/usr/bin/qemu-${arch}-static" "${CHROOT_MOUNT}/usr/bin/"
     update-binfmts --enable qemu-${arch}
   done
 
   # mount additional partitions
-  chroot "${CHROOT_MOUNT}" mount -a
+  # chroot "${CHROOT_MOUNT}" mount -a  # XXX: remove comment
 }
 
 # chroot_teardown unmounts the given image file, mounted with chroot_setup.
