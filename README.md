@@ -59,10 +59,11 @@ More examples are available in the
 
 ### Commands
 #### `FROM`
-`FROM` sets the `SOURCE_IMG` variable to the given file. This file will be
-used as the base for the new image.
+`FROM` sets the `SOURCE_IMG` variable to a target. This might be a local file or
+a remote URL, which will be downloaded. This file will become the base for
+the new image.
 
-*Usage:* `FROM PATH_TO_IMAGE`
+*Usage:* `FROM PATH_TO_IMAGE`, `FROM URL`
 
 
 #### `TO`

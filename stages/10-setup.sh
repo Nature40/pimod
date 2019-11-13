@@ -21,17 +21,23 @@ post_stage() {
   fi
 }
 
-# FROM sets the SOURCE_IMG variable to the given file. This file will be used
-# as the base for the new image.
+# FROM sets the SOURCE_IMG variable to a target. This might be a local file or
+# a remote URL, which will be downloaded. This file will become the base for
+# the new image.
 #
 # Usage: FROM PATH_TO_IMAGE
+#        FROM URL 
 FROM() {
-  if [[ ! -f "${1}" ]]; then
-    echo -e "\033[0;31m### Error: ${1} does not exists!\033[0m"
+  if [[ -f "${1}" ]]; then
+    SOURCE_IMG="${1}"
+  elif from_remote_valid "${1}"; then
+    if ! from_remote_fetch "${1}"; then
+      return 1
+    fi
+  else
+    echo -e "\033[0;31m### Error: ${1} is neither a file nor fetachable!\033[0m"
     return 1
   fi
-
-  SOURCE_IMG="${1}"
 
   if [ -z "${2}" ]; then
     IMG_ROOT="2"

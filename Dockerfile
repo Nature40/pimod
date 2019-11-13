@@ -1,7 +1,7 @@
 FROM debian:buster-slim
 
 RUN apt-get update && \
-  apt-get install -y kpartx qemu qemu-user-static binfmt-support parted
+  apt-get install -y binfmt-support file kpartx parted qemu qemu-user-static unzip wget
 
 RUN mkdir /pimod
 COPY pimod.sh modules stages /pimod/
