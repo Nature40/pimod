@@ -9,13 +9,16 @@ post_stage() {
     echo "DEST_IMG was not set, defaults to ${DEST_IMG}"
   fi
 
-  echo -e "\033[0;32m### TO ${DEST_IMG}\033[0m"
-  if [ ${SOURCE_IMG} != ${DEST_IMG} ]; then
-    cp "${SOURCE_IMG}" "${DEST_IMG}"
+  if [ -z "$INPLACE_MODE" ]; then
+    echo -e "\033[0;32m### TO ${DEST_IMG}\033[0m"
+    if [ ${SOURCE_IMG} != ${DEST_IMG} ]; then
+      cp "${SOURCE_IMG}" "${DEST_IMG}"
+    else
+      echo -e "\033[0;33m### Warning: SOURCE_IMG and DEST_IMG are identical, ${DEST_IMG} will be overwritten.\033[0m"
+    fi
   else
-    echo -e "\033[0;33m### Warning: SOURCE_IMG and DEST_IMG are identical, ${DEST_IMG} will be overwritten.\033[0m"
+    set -u INPLACE_MODE
   fi
-
 }
 
 # FROM sets the SOURCE_IMG variable to the given file. This file will be used
@@ -36,7 +39,9 @@ FROM() {
     IMG_ROOT="${2}"
   fi
 
-  echo -e "\033[0;32m### FROM ${SOURCE_IMG} ${IMG_ROOT}\033[0m"
+  if [ -z "$INPLACE_MODE" ]; then
+    echo -e "\033[0;32m### FROM ${SOURCE_IMG} ${IMG_ROOT}\033[0m"
+  fi
 }
 
 # TO sets the DEST_IMG variable to the given file. This file will contain the
@@ -52,4 +57,17 @@ FROM() {
 # Usage: TO PATH_TO_IMAGE
 TO() {
   DEST_IMG=$1
+}
+
+# INPLACE does not create a copy of the image, but performs all further
+# operations on the given image. This is an alternative to FROM and TO.
+#
+# Usage: INPLACE PATH_TO_IMAGE
+INPLACE() {
+  INPLACE_MODE=1
+
+  FROM "$@"
+  TO "$1"
+
+  echo -e "\033[0;32m### INPLACE ${@}\033[0m"
 }

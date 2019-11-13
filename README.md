@@ -79,6 +79,13 @@ default to *rpi.img* in the source file's directory.
 *Usage:* `TO PATH_TO_IMAGE`
 
 
+#### `INPLACE`
+`INPLACE` does not create a copy of the image, but performs all further
+operations on the given image. This is an alternative to `FROM` and `TO`.
+
+*Usage:* `INPLACE PATH_TO_IMAGE`
+
+
 #### `PUMP`
 `PUMP` increases the image's size about the given amount (suffixes K, M, G are allowed).
 
