@@ -31,7 +31,7 @@ from_remote_fetch() {
       unzip -q -d "${unzip_dir}" "${tmpfile}.zip"
 
       local unzip_files=`ls -1 "${unzip_dir}" | wc -l`
-      if [ "$unzip_files" -ne "1" ]; then
+      if [[ "$unzip_files" -ne "1" ]]; then
         echo -e "\033[0;31m### Error: Expected only one file in the ZIP archive, got ${unzip_files}\033[0m"
         return 1
       fi

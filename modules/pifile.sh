@@ -8,14 +8,14 @@ inspect_pifile_name() {
   to_name=`echo "${1}" \
     | sed -E '/\.Pifile$/!{q1}; {s/^([[:graph:]]*)\.Pifile$/\1/}'`
 
-  [ $? -eq 0 ] && DEST_IMG="${to_name}.img" || unset DEST_IMG
+  [[ "$?" -eq "0" ]] && DEST_IMG="${to_name}.img" || unset DEST_IMG
   unset to_name
 }
 
 # execute_pifile runs the given Pifile.
 # Usage: execute_pifile PIFILE
 execute_pifile() {
-  if [ -z "${1}" ] || [ ! -f "${1}" ]; then
+  if [[ -z ${1+x} ]] || [[ ! -f "${1}" ]]; then
     echo -e "\033[0;31m### Error: Pifile \"${1}\" does not exist.\033[0m"
     return 1
   fi

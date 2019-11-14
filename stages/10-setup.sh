@@ -1,23 +1,23 @@
 post_stage() {
-  if [ -z "${SOURCE_IMG}" ]; then
+  if [[ -z ${SOURCE_IMG+x} ]]; then
     echo -e "\033[0;31m### Error: SOURCE_IMG was not set; please call FROM\033[0m"
     return 1
   fi
 
-  if [ -z "${DEST_IMG}" ]; then
+  if [[ -z ${DEST_IMG+x} ]]; then
     DEST_IMG="`dirname ${SOURCE_IMG}`/rpi.img"
     echo "DEST_IMG was not set, defaults to ${DEST_IMG}"
   fi
 
-  if [ -z "$INPLACE_MODE" ]; then
+  if [[ -z ${INPLACE_MODE+x} ]]; then
     echo -e "\033[0;32m### TO ${DEST_IMG}\033[0m"
-    if [ ${SOURCE_IMG} != ${DEST_IMG} ]; then
+    if [[ "${SOURCE_IMG}" != "${DEST_IMG}" ]]; then
       cp "${SOURCE_IMG}" "${DEST_IMG}"
     else
       echo -e "\033[0;33m### Warning: SOURCE_IMG and DEST_IMG are identical, ${DEST_IMG} will be overwritten.\033[0m"
     fi
   else
-    set -u INPLACE_MODE
+    unset INPLACE_MODE
   fi
 }
 
@@ -26,7 +26,7 @@ post_stage() {
 # the new image.
 #
 # Usage: FROM PATH_TO_IMAGE
-#        FROM URL 
+#        FROM URL
 FROM() {
   if [[ -f "${1}" ]]; then
     SOURCE_IMG="${1}"
@@ -39,13 +39,9 @@ FROM() {
     return 1
   fi
 
-  if [ -z "${2}" ]; then
-    IMG_ROOT="2"
-  else
-    IMG_ROOT="${2}"
-  fi
+  [[ -z ${2+x} ]] && IMG_ROOT="2" || IMG_ROOT="${2}"
 
-  if [ -z "$INPLACE_MODE" ]; then
+  if [[ -z ${INPLACE_MODE+x} ]]; then
     echo -e "\033[0;32m### FROM ${SOURCE_IMG} ${IMG_ROOT}\033[0m"
   fi
 }
