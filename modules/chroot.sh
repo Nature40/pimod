@@ -14,15 +14,7 @@ chroot_setup() {
   mount --bind /proc "${CHROOT_MOUNT}/proc"
   mount --bind /dev/pts "${CHROOT_MOUNT}/dev/pts"
 
-  # disable preloading (not working because of missing paths)
-  test -f "${CHROOT_MOUNT}/etc/ld.so.preload" && \
-    sed -i 's/^/#/g' "${CHROOT_MOUNT}/etc/ld.so.preload"
-
-  # copy qemu binaries for selected platforms
-  for arch in ${QEMU_ARCHS}; do
-    cp "/usr/bin/qemu-${arch}-static" "${CHROOT_MOUNT}/usr/bin/"
-    update-binfmts --enable qemu-${arch}
-  done
+  qemu_setup
 
   # mount additional partitions
   chroot "${CHROOT_MOUNT}" mount -a
@@ -31,14 +23,7 @@ chroot_setup() {
 # chroot_teardown unmounts the given image file, mounted with chroot_setup.
 # Usage: chroot_teardown PATH_TO_IMAGE
 chroot_teardown() {
-  for arch in ${QEMU_ARCHS}; do
-    update-binfmts --disable qemu-${arch}
-    rm "${CHROOT_MOUNT}/usr/bin/qemu-${arch}-static"
-  done
-
-  # enable preloading libraries
-  test -f "${CHROOT_MOUNT}/etc/ld.so.preload" && \
-    sed -i 's/^#//g' "${CHROOT_MOUNT}/etc/ld.so.preload"
+  qemu_teardown
 
   # umount "${CHROOT_MOUNT}/boot"
   umount -Rv "${CHROOT_MOUNT}/"
