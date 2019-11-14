@@ -101,6 +101,13 @@ parameter.
 *Usage*: `INSTALL [MODE] SOURCE DEST`
 
 
+#### `PATH`
+`PATH` adds the given path to an overlaying PATH variable, used within the `RUN`
+command.
+
+Usage: `PATH /my/guest/path`
+
+
 #### `RUN`
 `RUN` executes a command in the chrooted image based on QEMU user emulation.
 
