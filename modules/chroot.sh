@@ -17,7 +17,8 @@ chroot_setup() {
   qemu_setup
 
   # mount additional partitions
-  chroot "${CHROOT_MOUNT}" mount -a
+  chroot "${CHROOT_MOUNT}" mount -a || \
+      echo -e "\033[0;33m### Warning: Mounting image partitions using /etc/fstab failed.\033[0m"
 }
 
 # chroot_teardown unmounts the given image file, mounted with chroot_setup.
