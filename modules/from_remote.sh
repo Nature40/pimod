@@ -46,6 +46,11 @@ from_remote_fetch() {
       gunzip "${tmpfile}.gz"
       ;;
 
+    application/x-xz)
+      mv "${tmpfile}" "${tmpfile}.xz"
+      unxz "${tmpfile}.xz"
+      ;;
+
     *)
       echo -e "\033[0;31m### Error: Unknown MIME ${mime}\033[0m"
       return 1
