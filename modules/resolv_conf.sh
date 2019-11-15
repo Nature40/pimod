@@ -12,7 +12,10 @@ resolv_conf_setup() {
     mv "${resolv_conf}" "${RESOLV_CONF_BACKUP}"
   fi
 
-  touch "${resolv_conf}"
+  if ! touch "${resolv_conf}"; then
+    echo -e "\033[0;33m### Warning: Mounting ${resolv_conf} failed.\033[0m"
+    return
+  fi
   mount -o ro,bind /etc/resolv.conf "${resolv_conf}"
 
   RESOLVE_MOUNT=1
