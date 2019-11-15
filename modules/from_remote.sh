@@ -4,11 +4,25 @@ from_remote_valid() {
   [[ $1 =~ $schemeRegexp ]]
 }
 
+# unarchive_image extracts files from an image and moves the largest to a given path.
+unarchive_image() {
+  local archive="${1}"
+  local tmpfile="${2}"
+  local unzip_dir=`mktemp -d`
+
+  7z e -bd -o"${unzip_dir}" "${archive}"
+  rm "${archive}"
+
+  # pick largest file, as it is most likely the image
+  local unzip_image=`ls -S -1 "${unzip_dir}" | head -n1`
+  mv "${unzip_dir}/${unzip_image}" "${tmpfile}"
+}
+
 # from_remote_fetch tries to fetch a remote image and uses it for FROM.
 from_remote_fetch() {
   local tmpfile=`mktemp -u`
   local logfile=`mktemp -u`
-  local download_cmd="wget -nv -O ${tmpfile} -o ${logfile} $1"
+  local download_cmd="wget --progress=dot:giga -O ${tmpfile} $1"
 
   if ! `${download_cmd}`; then
     while read -r line; do
@@ -25,20 +39,13 @@ from_remote_fetch() {
       ;;
 
     application/zip)
-      local unzip_dir=`mktemp -d`
-
       mv "${tmpfile}" "${tmpfile}.zip"
-      unzip -q -d "${unzip_dir}" "${tmpfile}.zip"
+      unarchive_image "${tmpfile}.zip" "${tmpfile}"
+      ;;
 
-      local unzip_files=`ls -1 "${unzip_dir}" | wc -l`
-      if [[ "$unzip_files" -ne "1" ]]; then
-        echo -e "\033[0;31m### Error: Expected only one file in the ZIP archive, got ${unzip_files}\033[0m"
-        return 1
-      fi
-
-      for f in ${unzip_dir}/*; do
-        mv "${f}" "${tmpfile}"
-      done
+    application/x-7z-compressed)
+      mv "${tmpfile}" "${tmpfile}.7z"
+      unarchive_image "${tmpfile}.7z" "${tmpfile}"
       ;;
 
     application/gzip)
