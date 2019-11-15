@@ -15,5 +15,5 @@ handle_error() {
 
   # teardown chroot / mount / loop environment
   chroot_teardown
-  exit $RET
+  exit ${1}
 }
