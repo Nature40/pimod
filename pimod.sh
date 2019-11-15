@@ -12,15 +12,21 @@ show_help() {
 Usage: ${0} [Options] Pifile
 
 Options:
+  -d        Debug on failure; run an interactive shell before teardown
   -h        Print this help message.
 EOF
 }
 
-while getopts "h" opt; do
+DEBUG=0
+
+while getopts "hd" opt; do
   case "$opt" in
   h)
     show_help
     exit 0
+    ;;
+  d)
+    DEBUG=1
     ;;
   esac
 done
