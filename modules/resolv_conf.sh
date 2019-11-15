@@ -14,17 +14,19 @@ resolv_conf_setup() {
 
   touch "${resolv_conf}"
   mount -o ro,bind /etc/resolv.conf "${resolv_conf}"
+
+  RESOLVE_MOUNT=1
 }
 
 # resolv_conf_teardown resets the actions done by resolv_conf_setup.
 resolv_conf_teardown() {
+  [[ -z ${RESOLVE_MOUNT+x} ]] && return 0
+
   local resolv_conf="${CHROOT_MOUNT}/etc/resolv.conf"
 
   umount "${resolv_conf}"
 
   if [[ -n ${RESOLV_CONF_BACKUP+x} ]]; then
     mv "${RESOLV_CONF_BACKUP}" "${resolv_conf}"
-
-    set -u RESOLV_CONF_BACKUP
   fi
 }
