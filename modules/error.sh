@@ -6,7 +6,11 @@ handle_error() {
   # ignore further errors
   trap "" ERR
 
-  echo -e "\033[0;31m### Error: \"${2}\" returned ${1}, cleaning up...\033[0m"
+  if [[ -z ${2+x} ]]; then
+    echo -e "\033[0;31m### Error ${1}, cleaning up...\033[0m"
+  else
+    echo -e "\033[0;31m### Error: \"${2}\" returned ${1}, cleaning up...\033[0m"
+  fi
 
   if [ "$DEBUG" -eq "1" ]; then
     echo 'Running an interactive debug shell, use ^D or `exit` to cleanup.'
