@@ -5,25 +5,36 @@ qemu_setup() {
   [[ -f "${CHROOT_MOUNT}/etc/ld.so.preload" ]] && \
     sed -i 's/^/#/g' "${CHROOT_MOUNT}/etc/ld.so.preload"
 
-  QEMU_HOST=`mktemp -d`
+  QEMU_MOUNTS=""
 
+  # bind mount
   for arch in ${QEMU_ARCHS}; do
-    ln -t "${QEMU_HOST}" "/usr/bin/qemu-${arch}-static"
+    # get local paths of qemu
+    local qemu_path=`which "qemu-${arch}-static"`
+    local bin_path=`dirname "${qemu_path}"`
+
+    # recreate bin folders
+    mkdir -p "${CHROOT_MOUNT}/${bin_path}"
+    touch "${CHROOT_MOUNT}/${qemu_path}"
+
+    mount -o ro,bind "${qemu_path}" "${CHROOT_MOUNT}/${qemu_path}"
+    QEMU_MOUNTS="$QEMU_MOUNTS ${CHROOT_MOUNT}/${qemu_path}"
+
+    # enable arch
     update-binfmts --enable qemu-${arch}
   done
-
-  QEMU_GUEST=`mktemp -d -p "${CHROOT_MOUNT}"`
-  mount --bind "${QEMU_HOST}" "${QEMU_GUEST}"
-  path_add "/`basename ${QEMU_GUEST}`"
 }
 
 qemu_teardown() {
+  # unmount qemu binaries, remove temp files
+  umount ${QEMU_MOUNTS}
+  rm ${QEMU_MOUNTS}
+  unset QEMU_MOUNTS
+
+  # disable arch
   for arch in ${QEMU_ARCHS}; do
     update-binfmts --disable qemu-${arch}
   done
-
-  umount "${QEMU_GUEST}"
-  rm -r "${QEMU_HOST}"
 
   # enable preloading libraries
   [[ -f "${CHROOT_MOUNT}/etc/ld.so.preload" ]] && \
