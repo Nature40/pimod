@@ -12,7 +12,12 @@ post_stage() {
   if [[ -z ${INPLACE_MODE+x} ]]; then
     echo -e "\033[0;32m### TO ${DEST_IMG}\033[0m"
     if [[ "${SOURCE_IMG}" != "${DEST_IMG}" ]]; then
-      cp "${SOURCE_IMG}" "${DEST_IMG}"
+      if [[ -z ${SOURCE_IMG_TMP+x} ]]; then
+        cp "${SOURCE_IMG}" "${DEST_IMG}"
+      else
+        mv "${SOURCE_IMG}" "${DEST_IMG}"
+        unset SOURCE_IMG_TMP
+      fi
     else
       echo -e "\033[0;33m### Warning: SOURCE_IMG and DEST_IMG are identical, ${DEST_IMG} will be overwritten.\033[0m"
     fi
@@ -67,7 +72,7 @@ TO() {
 # Usage: INPLACE PATH_TO_IMAGE
 INPLACE() {
   if from_remote_valid "${1}"; then
-    echo -e "\033[0;31m### Error: INPLACE cannot be used with a URLs.\033[0m"
+    echo -e "\033[0;31m### Error: INPLACE cannot be used with a URL.\033[0m"
     return 1
   fi
 

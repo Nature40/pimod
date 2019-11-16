@@ -12,21 +12,23 @@ show_help() {
 Usage: ${0} [Options] Pifile
 
 Options:
-  -d        Debug on failure; run an interactive shell before teardown
+  -c cache  Define cache location.
+  -d        Debug on failure; run an interactive shell before tear down
   -h        Print this help message.
 EOF
 }
 
-DEBUG=0
-
-while getopts "hd" opt; do
-  case "$opt" in
+while getopts "c:dh" opt; do
+  case "${opt}" in
+  c)
+    PIMOD_CACHE="${OPTARG}"
+    ;;
+  d)
+    PIMOD_DEBUG=1
+    ;;
   h)
     show_help
     exit 0
-    ;;
-  d)
-    DEBUG=1
     ;;
   esac
 done

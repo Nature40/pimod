@@ -1,3 +1,7 @@
+if [ -z ${PIMOD_CACHE+x} ]; then 
+  PIMOD_CACHE="/var/cache/pimod"
+fi
+
 # from_remote_valid checks if the given string indicates a valid URL.
 from_remote_valid() {
   local schemeRegexp="^(https?|ftp)://.*"
@@ -11,51 +15,53 @@ unarchive_image() {
   local unzip_dir=`mktemp -d`
 
   7z e -bd -o"${unzip_dir}" "${archive}"
-  rm "${archive}"
 
   # pick largest file, as it is most likely the image
   local unzip_image=`ls -S -1 "${unzip_dir}" | head -n1`
   mv "${unzip_dir}/${unzip_image}" "${tmpfile}"
+  rm -rf "${unzip_dir}"
 }
 
 # from_remote_fetch tries to fetch a remote image and uses it for FROM.
 from_remote_fetch() {
-  local tmpfile=`mktemp -u`
-  local logfile=`mktemp -u`
-  local download_cmd="wget --progress=dot:giga -O ${tmpfile} $1"
+  local url="${1}"
+  local url_path=`echo ${url} | sed 's/.*:\/\///'`
+  local download_path="${PIMOD_CACHE}/${url_path}"
 
-  if ! `${download_cmd}`; then
-    while read -r line; do
-      echo -e "\033[0;31m### Error: ${line}\033[0m"
-    done < "${logfile}"
-
-    return 1
+  if [ -f "${download_path}" ]; then
+    echo "Using cache: ${download_path}"
+  else
+    mkdir -p `dirname "${download_path}"`
+    wget --progress=dot:giga -O "${download_path}" "${url}"
   fi
 
-  local mime=`file -b --mime-type "${tmpfile}"`
+  local tmpfile=`mktemp -u`
+
+  local mime=`file -b --mime-type "${download_path}"`
   case "${mime}" in
     application/octet-stream)
       # let's seriously hope it's an image..
+      cp "${download_path}" "${tmpfile}"
       ;;
 
     application/zip)
-      mv "${tmpfile}" "${tmpfile}.zip"
-      unarchive_image "${tmpfile}.zip" "${tmpfile}"
+      unarchive_image "${download_path}" "${tmpfile}"
       ;;
 
     application/x-7z-compressed)
-      mv "${tmpfile}" "${tmpfile}.7z"
-      unarchive_image "${tmpfile}.7z" "${tmpfile}"
+      unarchive_image "${download_path}" "${tmpfile}"
       ;;
 
     application/gzip)
-      mv "${tmpfile}" "${tmpfile}.gz"
-      gunzip "${tmpfile}.gz"
+      gunzip -c "${download_path}" > "${tmpfile}"
+      ;;
+
+    application/x-gzip)
+      gunzip -c "${download_path}" > "${tmpfile}"
       ;;
 
     application/x-xz)
-      mv "${tmpfile}" "${tmpfile}.xz"
-      unxz "${tmpfile}.xz"
+      unxz -c "${download_path}" > "${tmpfile}"
       ;;
 
     *)
@@ -65,4 +71,5 @@ from_remote_fetch() {
   esac
 
   SOURCE_IMG="${tmpfile}"
+  SOURCE_IMG_TMP=1
 }
