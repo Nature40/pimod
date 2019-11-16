@@ -66,6 +66,11 @@ TO() {
 #
 # Usage: INPLACE PATH_TO_IMAGE
 INPLACE() {
+  if from_remote_valid "${1}"; then
+    echo -e "\033[0;31m### Error: INPLACE cannot be used with a URLs.\033[0m"
+    return 1
+  fi
+
   INPLACE_MODE=1
 
   FROM "$@"
