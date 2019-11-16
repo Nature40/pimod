@@ -17,6 +17,7 @@ RUN mkdir /pimod
 COPY pimod.sh modules stages /pimod/
 
 ENV PATH="/pimod:${PATH}"
-WORKDIR /pimod
+ENV PIMOD_CACHE=".cache"
 
+WORKDIR /pimod
 CMD pimod.sh Pifile
