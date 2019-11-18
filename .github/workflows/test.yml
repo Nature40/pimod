@@ -1,0 +1,19 @@
+name: Tests
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository 
+      uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y binfmt-support file kpartx parted qemu qemu-user-static unzip p7zip-full wget xz-utils
+    - name: Run pimod.sh tests/RaspberryPi/OpenWRT.Pifile
+      run: sudo pimod/pimod.sh examples/RPi-OpenWRT.Pifile

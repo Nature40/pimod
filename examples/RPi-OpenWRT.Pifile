@@ -1,0 +1,23 @@
+FROM http://downloads.openwrt.org/releases/18.06.5/targets/brcm2708/bcm2710/openwrt-18.06.5-brcm2708-bcm2710-rpi-3-ext4-factory.img.gz
+
+PUMP 10M
+
+# check validity of downloaded image
+RUN grep "OpenWrt 18.06.5 r7897-9d401013fc" /etc/os-release
+
+# test size of the image
+RUN sh -c "df -P / | grep 266200"
+
+# test if opkg works
+RUN mkdir -p /var/lock/
+RUN opkg update
+
+# test if PATH extension works
+RUN sh -c 'printf "#!/bin/sh\necho hello\n" > /tmp/hello'
+RUN chmod +x /tmp/hello
+PATH /tmp/
+RUN hello
+
+# test if INSTALL works
+INSTALL "README.md" "/tmp/"
+RUN head -n1 "/tmp/README.md"
