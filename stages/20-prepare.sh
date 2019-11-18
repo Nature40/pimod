@@ -19,7 +19,7 @@ EOF
 
   local loop=`mount_image "${DEST_IMG}"`
 
-  e2fsck -f "/dev/mapper/${loop}p${IMG_ROOT}"
+  e2fsck -y -f "/dev/mapper/${loop}p${IMG_ROOT}"
   resize2fs "/dev/mapper/${loop}p${IMG_ROOT}"
 
   fdisk -l "/dev/${loop}"
