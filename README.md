@@ -1,4 +1,6 @@
 # pimod
+[![Test Build Status](https://github.com/Nature40/pimod/workflows/Tests/badge.svg)](https://github.com/Nature40/pimod/actions?query=workflow%3A%22Tests%22)
+
 Reconfigure Raspberry Pi images with an easy, Docker-like configuration file.
 
 
