@@ -2,6 +2,11 @@
 #
 # Usage: PUMP SIZE_IN_MB
 PUMP() {
+  if [[ -b "${DEST_IMG}" ]]; then
+    echo -e "\033[0;31m### Error: Block device ${DEST_IMG} cannot be pumped.s\033[0m"
+    return 1
+  fi
+
   echo -e "\033[0;32m### PUMP ${1}\033[0m"
   dd if=/dev/zero bs=${1} count=1 >> "${DEST_IMG}"
 

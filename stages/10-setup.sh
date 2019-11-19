@@ -1,29 +1,36 @@
 post_stage() {
   if [[ -z ${SOURCE_IMG+x} ]]; then
-    echo -e "\033[0;31m### Error: SOURCE_IMG was not set; please call FROM\033[0m"
+    echo -e "\033[0;31m### Error: No source was set, use FROM or INPLACE\033[0m"
     return 1
   fi
 
-  if [[ -z ${DEST_IMG+x} ]]; then
-    DEST_IMG="`dirname ${SOURCE_IMG}`/rpi.img"
-    echo "DEST_IMG was not set, defaults to ${DEST_IMG}"
+  if [[ "${SOURCE_IMG}" == "${DEST_IMG}" ]]; then
+    echo "Working inplace ${SOURCE_IMG}."
+    return 0
   fi
 
-  if [[ -z ${INPLACE_MODE+x} ]]; then
-    echo -e "\033[0;32m### TO ${DEST_IMG}\033[0m"
-    if [[ "${SOURCE_IMG}" != "${DEST_IMG}" ]]; then
-      if [[ -z ${SOURCE_IMG_TMP+x} ]]; then
-        cp "${SOURCE_IMG}" "${DEST_IMG}"
-      else
-        mv "${SOURCE_IMG}" "${DEST_IMG}"
-        unset SOURCE_IMG_TMP
-      fi
-    else
-      echo -e "\033[0;33m### Warning: SOURCE_IMG and DEST_IMG are identical, ${DEST_IMG} will be overwritten.\033[0m"
+  if [[ -b "${DEST_IMG}" ]]; then
+    echo "Writing ${SOURCE_IMG} to block device ${DEST_IMG}."
+    umount "${DEST_IMG}"* || true
+    dd if="${SOURCE_IMG}" of="${DEST_IMG}" bs=1M status=progress
+    if [[ -n "${SOURCE_IMG_TMP+x}" ]]; then
+      rm "${SOURCE_IMG}"
+      unset SOURCE_IMG_TMP
     fi
-  else
-    unset INPLACE_MODE
+
+    return 0
   fi
+
+  if [[ -n "${SOURCE_IMG_TMP+x}" ]]; then
+    echo "Moving temporary ${SOURCE_IMG} to ${DEST_IMG}."
+    mv "${SOURCE_IMG}" "${DEST_IMG}"
+    unset SOURCE_IMG_TMP
+
+    return 0
+  fi
+
+  echo "Copying ${SOURCE_IMG} to ${DEST_IMG}."
+  cp "${SOURCE_IMG}" "${DEST_IMG}"
 }
 
 # FROM sets the SOURCE_IMG variable to a target. This might be a local file or
@@ -33,21 +40,23 @@ post_stage() {
 # Usage: FROM PATH_TO_IMAGE
 #        FROM URL
 FROM() {
-  if [[ -f "${1}" ]]; then
+  echo -e "\033[0;32m### FROM ${@}\033[0m"
+
+  # Hande remote sources
+  if [[ -f "${1}" || -b "${1}" ]]; then
     SOURCE_IMG="${1}"
   elif from_remote_valid "${1}"; then
-    if ! from_remote_fetch "${1}"; then
-      return 1
-    fi
+    from_remote_fetch "${1}"
   else
-    echo -e "\033[0;31m### Error: ${1} is neither a file nor fetachable!\033[0m"
+    echo -e "\033[0;31m### Error: ${1} is not a file, device or fetachable!\033[0m"
     return 1
   fi
 
-  [[ -z ${2+x} ]] && IMG_ROOT="2" || IMG_ROOT="${2}"
-
-  if [[ -z ${INPLACE_MODE+x} ]]; then
-    echo -e "\033[0;32m### FROM ${SOURCE_IMG} ${IMG_ROOT}\033[0m"
+  # Set default root partition, if not specified
+  if [[ -z ${2+x} ]]; then
+    IMG_ROOT="2"
+  else
+    IMG_ROOT="${2}"
   fi
 }
 
@@ -63,7 +72,8 @@ FROM() {
 #
 # Usage: TO PATH_TO_IMAGE
 TO() {
-  DEST_IMG=$1
+  echo -e "\033[0;32m### TO ${1}\033[0m"
+  DEST_IMG="${1}"
 }
 
 # INPLACE does not create a copy of the image, but performs all further
@@ -76,10 +86,6 @@ INPLACE() {
     return 1
   fi
 
-  INPLACE_MODE=1
-
   FROM "$@"
   TO "$1"
-
-  echo -e "\033[0;32m### INPLACE ${@}\033[0m"
 }
