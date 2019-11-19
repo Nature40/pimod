@@ -31,6 +31,7 @@ from_remote_fetch() {
   if [ -f "${download_path}" ]; then
     echo "Using cache: ${download_path}"
   else
+    echo "Fetching remote: ${url}"
     mkdir -p `dirname "${download_path}"`
     wget --progress=dot:giga -O "${download_path}" "${url}"
   fi
