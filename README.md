@@ -100,14 +100,14 @@ operations on the given image. This is an alternative to `FROM` and `TO`.
 image. The optionally permission mode (*chmod*) can be set as the first
 parameter.
 
-*Usage*: `INSTALL [MODE] SOURCE DEST`
+*Usage:* `INSTALL [MODE] SOURCE DEST`
 
 
 #### `PATH`
 `PATH` adds the given path to an overlaying PATH variable, used within the `RUN`
 command.
 
-Usage: `PATH /my/guest/path`
+*Usage:* `PATH /my/guest/path`
 
 
 #### `RUN`
@@ -121,6 +121,12 @@ RUN bash -c 'hexdump /dev/urandom | head'
 ```
 
 *Usage:* `RUN CMD PARAMS...`
+
+
+#### `HOST`
+`HOST` executed a command on the local host and can be used to prepare files, cross-compile software, etc.
+
+*Usage:* `HOST CMD PARAMS...`
 
 
 ### Hacks
@@ -144,6 +150,17 @@ RUN <<EOF
 apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
 apt-get install -y sl
+EOF
+```
+
+#### Inplace Files
+Here documents can also be used to create files inside of the guest system, e.g., by using `tee` or `dd`.
+
+```
+RUN tee /bin/example.sh <<EOF
+#!/bin/sh
+
+echo "Example output."
 EOF
 ```
 

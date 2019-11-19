@@ -54,3 +54,12 @@ RUN() {
   echo -e "\033[0;32m### RUN ${@}\033[0m"
   PATH=${GUEST_PATH} chroot "${CHROOT_MOUNT}" "${@}"
 }
+
+# HOST executed a command on the local host and can be used to prepare files, 
+# cross-compile software, etc.
+#
+# Usage: HOST CMD PARAMS...
+HOST() {
+  echo -e "\033[0;32m### HOST ${@}\033[0m"
+  "${@}"
+}
