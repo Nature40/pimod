@@ -17,14 +17,19 @@ post_stage() {
 # Usage: INSTALL [MODE] SOURCE DEST
 INSTALL() {
   echo -e "\033[0;32m### INSTALL $@\033[0m"
+  
+  local src=""
+  local dst=""
+
   case "$#" in
     "2")
-      cp -d -R --preserve=mode "${1}" "${CHROOT_MOUNT}/${2}"
+      src="$1"
+      dst="$2"
       ;;
 
     "3")
-      cp -d -R --preserve=mode "${2}" "${CHROOT_MOUNT}/${3}"
-      chmod "${1}" "${CHROOT_MOUNT}/${3}"
+      src="$2"
+      dst="$3"
       ;;
 
     *)
@@ -32,6 +37,16 @@ INSTALL() {
       return 1
       ;;
   esac
+
+  if [[ -d "${src}" ]]; then
+    cp -r -T -P --preserve=mode "${src}" "${CHROOT_MOUNT}/${dst}"
+  else
+    cp -r -P --preserve=mode "${src}" "${CHROOT_MOUNT}/${dst}"
+  fi
+
+  if [[ "$#" -eq "3" ]]; then
+    chmod "$1" "${CHROOT_MOUNT}/${dst}"
+  fi
 }
 
 # PATH adds the given path to an overlaying PATH variable, used within the RUN
