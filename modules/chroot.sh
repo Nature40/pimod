@@ -32,7 +32,7 @@ chroot_teardown() {
   RUNNING="`lsof -t ${CHROOT_MOUNT}`"
   if [ "${RUNNING}" ]; then
     echo -e "\033[0;33m### Warning: Remaining processes ("${RUNNING}") are killed.\033[0m"
-    kill ${RUNNING}
+    kill -9 ${RUNNING}
   fi
   unset RUNNING
 
