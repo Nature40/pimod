@@ -27,7 +27,14 @@ qemu_setup() {
 
 qemu_teardown() {
   # unmount qemu binaries, remove temp files
-  umount ${QEMU_MOUNTS}
+  i=0
+  while ! umount ${QEMU_MOUNTS}; do 
+    if [ $((i=i+1)) -ge 10 ]; then 
+      return 101
+    fi
+    sleep 1
+  done
+
   rm ${QEMU_MOUNTS}
   unset QEMU_MOUNTS
 

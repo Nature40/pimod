@@ -5,6 +5,7 @@ RUN apt-get update && \
   binfmt-support \
   file \
   kpartx \
+  lsof \
   parted \
   qemu \
   qemu-user-static \

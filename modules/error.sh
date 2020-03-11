@@ -5,11 +5,6 @@ fi
 # handle_error handles an error which may occur during Pifile execution.
 # Usage: handle_error RETURN_CODE COMMAND
 handle_error() {
-  # disable script abort on error
-  set +eE
-  # ignore further errors
-  trap "" ERR
-
   if [[ -z ${2+x} ]]; then
     echo -e "\033[0;31m### Error ${1}, cleaning up...\033[0m"
   else

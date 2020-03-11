@@ -11,8 +11,19 @@ mount_image() {
 # umount_image unmounts the given image file, mounted with mount_image.
 # Usage: umount_image LOOP_NAME
 umount_image() {
-  for i in `seq 0 2`; do
-    kpartx -dvs "/dev/${1}" 1>&2 && losetup -d "/dev/${1}" && return
+  i=0
+  while ! kpartx -dvs "/dev/${1}" 1>&2; do 
+    if [[ $((i=i+1)) -ge 10 ]]; then 
+      return 103
+    fi
+    sleep 1
+  done
+
+  i=0
+  while ! losetup -d "/dev/${1}" 1>&2; do 
+    if [ $((i=i+1)) -ge 10 ]; then 
+      return 104
+    fi
     sleep 1
   done
 }
