@@ -1,5 +1,9 @@
 FROM debian:buster-slim
 
+LABEL description="Reconfigure Raspberry Pi images with an easy, Docker-like configuration file"
+LABEL maintainer="hoechst@mathematik.uni-marburg.de"
+LABEL version="0.1"
+
 RUN apt-get update && \
   apt-get install -y \
   binfmt-support \
