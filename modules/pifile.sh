@@ -4,12 +4,14 @@
 # or signs.
 # Usage: inspect_pifile_name PIFILE_NAME
 inspect_pifile_name() {
+  set +e
   # local always returns 0..
   to_name=`echo "${1}" \
     | sed -E '/\.Pifile$/!{q1}; {s/^([[:graph:]]*)\.Pifile$/\1/}'`
 
   [[ "$?" -eq "0" ]] && DEST_IMG="${to_name}.img" || unset DEST_IMG
   unset to_name
+  set -e
 }
 
 # execute_pifile runs the given Pifile.
