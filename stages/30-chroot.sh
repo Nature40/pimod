@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 pre_stage() {
   chroot_setup "${DEST_IMG}" "${IMG_ROOT}"
 
@@ -16,7 +18,7 @@ post_stage() {
 #
 # Usage: INSTALL [MODE] SOURCE DEST
 INSTALL() {
-  echo -e "\033[0;32m### INSTALL $@\033[0m"
+  echo -e "\033[0;32m### INSTALL $*\033[0m"
   
   local src=""
   local dst=""
@@ -66,7 +68,7 @@ PATH() {
 #
 # Usage: RUN CMD PARAMS...
 RUN() {
-  echo -e "\033[0;32m### RUN ${@}\033[0m"
+  echo -e "\033[0;32m### RUN ${*}\033[0m"
   PATH=${GUEST_PATH} chroot "${CHROOT_MOUNT}" "${@}"
 }
 
@@ -75,6 +77,6 @@ RUN() {
 #
 # Usage: HOST CMD PARAMS...
 HOST() {
-  echo -e "\033[0;32m### HOST ${@}\033[0m"
+  echo -e "\033[0;32m### HOST ${*}\033[0m"
   "${@}"
 }

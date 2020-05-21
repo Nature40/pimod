@@ -1,8 +1,11 @@
+#!/usr/bin/env bash
+
 # mount_image mounts the given image file as a loop device and "returns"/prints
 # the name of the loop device (e.g. loop0).
 # Usage: mount_image PATH_TO_IMAGE
 mount_image() {
-  local loop_path=`losetup -f "${1}" --show`
+  local loop_path
+  loop_path=$(losetup -f "${1}" --show)
   kpartx -avs "${loop_path}" 1>&2
 
   basename "${loop_path}"

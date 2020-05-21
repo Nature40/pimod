@@ -1,5 +1,6 @@
 # pimod
-[![Test Build Status](https://github.com/Nature40/pimod/workflows/Tests/badge.svg)](https://github.com/Nature40/pimod/actions?query=workflow%3A%22Tests%22)
+[![tests](https://github.com/Nature40/pimod/workflows/tests/badge.svg?branch=master)](https://github.com/Nature40/pimod/actions?query=workflow%3Atests)
+[![shellcheck](https://github.com/Nature40/pimod/workflows/shellcheck/badge.svg?branch=master)](https://github.com/Nature40/pimod/actions?query=workflow%3Ashellcheck)
 
 Reconfigure Raspberry Pi images with an easy, Docker-like configuration file.
 
@@ -163,7 +164,6 @@ RUN tee /bin/example.sh <<EOF
 echo "Example output."
 EOF
 ```
-
 
 ## Notable Mentions
 - [Debian Wiki, qemu-user-static](https://wiki.debian.org/RaspberryPi/qemu-user-static)

@@ -1,10 +1,12 @@
+#!/usr/bin/env bash
+
 # chroot_setup mounts the given image file and prepares a chroot.
 # Usage: chroot_setup PATH_TO_IMAGE
 chroot_setup() {
   trap 'handle_error ${?} "${@}"' ERR
 
-  LOOP=`mount_image "${1}"`
-  CHROOT_MOUNT=`mktemp -d`
+  LOOP=$(mount_image "${1}")
+  CHROOT_MOUNT=$(mktemp -d)
 
   local loop_root="/dev/mapper/${LOOP}p${IMG_ROOT}"
   mount "${loop_root}" "${CHROOT_MOUNT}/"
@@ -29,10 +31,10 @@ chroot_teardown() {
   # ignore further errors
   trap "" ERR
 
-  RUNNING="`lsof -t ${CHROOT_MOUNT}`"
+  RUNNING=$(lsof -t "${CHROOT_MOUNT}")
   if [ "${RUNNING}" ]; then
-    echo -e "\033[0;33m### Warning: Remaining processes ("${RUNNING}") are killed.\033[0m"
-    kill -9 ${RUNNING}
+    echo -e "\033[0;33m### Warning: Remaining processes (${RUNNING}) are killed.\033[0m"
+    kill -9 "${RUNNING[@]}"
   fi
   unset RUNNING
 

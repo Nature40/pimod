@@ -2,10 +2,18 @@
 
 set -euE
 
-PIMOD_BASE="`dirname $0`"
-for mod in ${PIMOD_BASE}/modules/*.sh; do
-  . "${mod}"
-done
+pushd "$(dirname "$0")" > /dev/null
+
+. ./modules/chroot.sh
+. ./modules/error.sh
+. ./modules/from_remote.sh
+. ./modules/mount.sh
+. ./modules/path.sh
+. ./modules/pifile.sh
+. ./modules/qemu.sh
+. ./modules/resolv_conf.sh
+
+popd > /dev/null
 
 show_help() {
   cat <<EOF
@@ -30,10 +38,14 @@ while getopts "c:dh" opt; do
     show_help
     exit 0
     ;;
+  *)
+    show_help
+    exit 1
+    ;;
   esac
 done
 
-PIFILE=${@:$OPTIND:1}
+PIFILE=${*:$OPTIND:1}
 
 if [[ -z "${PIFILE}" ]]; then
   show_help

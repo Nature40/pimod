@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # PUMP increases the image's size about the given amount of megabytes.
 #
 # Usage: PUMP SIZE_IN_MB
@@ -8,8 +10,9 @@ PUMP() {
   fi
 
   echo -e "\033[0;32m### PUMP ${1}\033[0m"
-  dd if=/dev/zero bs=${1} count=1 >> "${DEST_IMG}"
+  dd if=/dev/zero bs="${1}" count=1 >> "${DEST_IMG}"
 
+  # shellcheck disable=SC2207
   TARGET_DETAILS=($(fdisk -l "${DEST_IMG}" | tail -n1))
   (fdisk "${DEST_IMG}" || echo "Continue...") <<EOF
 delete
@@ -22,7 +25,8 @@ ${TARGET_DETAILS[1]}
 w
 EOF
 
-  local loop=`mount_image "${DEST_IMG}"`
+  local loop
+  loop=$(mount_image "${DEST_IMG}")
 
   e2fsck -y -f "/dev/mapper/${loop}p${IMG_ROOT}"
   resize2fs "/dev/mapper/${loop}p${IMG_ROOT}"

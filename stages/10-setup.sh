@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 post_stage() {
   if [[ -z ${SOURCE_IMG+x} ]]; then
     echo -e "\033[0;31m### Error: No source was set, use FROM or INPLACE\033[0m"
@@ -22,7 +24,7 @@ post_stage() {
   fi
 
   if [[ -n "${SOURCE_IMG_TMP+x}" ]]; then
-    echo "Moving temporary ${SOURCE_IMG} to ${DEST_IMG}."
+    echo "Moving temporary ${SOURCE_IMG} to ${DEST_IMG}"
     mv "${SOURCE_IMG}" "${DEST_IMG}"
     unset SOURCE_IMG_TMP
 
@@ -40,7 +42,7 @@ post_stage() {
 # Usage: FROM PATH_TO_IMAGE
 #        FROM URL
 FROM() {
-  echo -e "\033[0;32m### FROM ${@}\033[0m"
+  echo -e "\033[0;32m### FROM ${*}\033[0m"
 
   # Hande remote sources
   if [[ -f "${1}" || -b "${1}" ]]; then
@@ -58,6 +60,8 @@ FROM() {
   else
     IMG_ROOT="${2}"
   fi
+
+  export IMG_ROOT
 }
 
 # TO sets the DEST_IMG variable to the given file. This file will contain the

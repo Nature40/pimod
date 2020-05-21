@@ -1,17 +1,21 @@
+#!/usr/bin/env bash
+
 # inspect_pifile_name checks the name of the given Pifile (first parameter)
 # and sets the internal DEST_IMG variable to the first part of this filename,
 # if the filename has the format of XYZ.Pifile, with XYZ being alphanumeric
 # or signs.
 # Usage: inspect_pifile_name PIFILE_NAME
 inspect_pifile_name() {
-  set +e
-  # local always returns 0..
-  to_name=`echo "${1}" \
-    | sed -E '/\.Pifile$/!{q1}; {s/^([[:graph:]]*)\.Pifile$/\1/}'`
+  local name
+  name="${1%.Pifile}"
 
-  [[ "$?" -eq "0" ]] && DEST_IMG="${to_name}.img" || unset DEST_IMG
-  unset to_name
-  set -e
+  if [ "${name}" ]; then
+    DEST_IMG="${name}.img"
+  else
+    DEST_IMG="${1}.img"
+  fi
+
+  export DEST_IMG
 }
 
 # execute_pifile runs the given Pifile.
@@ -22,17 +26,36 @@ execute_pifile() {
     return 1
   fi
 
-  inspect_pifile_name $1
+  inspect_pifile_name "$1"
 
-  bash -n $1
+  bash -n "$1"
 
-  stages="10-setup.sh 20-prepare.sh 30-chroot.sh"
-  for stage in ${stages}; do
-    . "${PIMOD_BASE}/stages/00-commands.sh"
-    . "${PIMOD_BASE}/stages/${stage}"
+  pushd "$(dirname "$0")/modules" > /dev/null || exit 2
+  . "../stages/00-commands.sh"
+  . "../stages/10-setup.sh"
+  popd > /dev/null || exit 2
+  pre_stage
+  # shellcheck disable=SC1090
+  . "$1"
+  post_stage
 
-    pre_stage
-    . "${1}"
-    post_stage
-  done
+  pushd "$(dirname "$0")/modules" > /dev/null || exit 2
+  . "../stages/00-commands.sh"
+  . "../stages/20-prepare.sh"
+  popd > /dev/null || exit 2
+  pre_stage
+  # shellcheck disable=SC1090
+  . "$1"
+  post_stage
+
+  pushd "$(dirname "$0")/modules" > /dev/null || exit 2
+  . "../stages/00-commands.sh"
+  . "../stages/30-chroot.sh"
+  popd > /dev/null || exit 2
+  pre_stage
+  # shellcheck disable=SC1090
+  . "$1"
+  post_stage
 }
+
+

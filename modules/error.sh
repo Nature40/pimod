@@ -1,4 +1,6 @@
-if [ -z ${PIMOD_DEBUG+x} ]; then
+#!/usr/bin/env bash
+
+if [ -z "${PIMOD_DEBUG+x}" ]; then
   PIMOD_DEBUG=0
 fi
 
@@ -12,11 +14,11 @@ handle_error() {
   fi
 
   if [ "${PIMOD_DEBUG}" -eq 1 ]; then
-    echo 'Running an interactive debug shell, use ^D or `exit` to cleanup.'
+    echo "Running an interactive debug shell, use ^D or 'exit' to cleanup."
     $SHELL
   fi
 
   # teardown chroot / mount / loop environment
   chroot_teardown
-  exit ${1}
+  exit "${1}"
 }

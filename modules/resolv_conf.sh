@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # resolv_conf_setup checks the /etc/resolv.conf file within an image and remaps
 # it, if necessary.
 resolv_conf_setup() {
@@ -8,7 +10,7 @@ resolv_conf_setup() {
   fi
 
   if [[ -L "${resolv_conf}" ]]; then
-    RESOLV_CONF_BACKUP=`mktemp -u`
+    RESOLV_CONF_BACKUP=$(mktemp -u)
     mv "${resolv_conf}" "${RESOLV_CONF_BACKUP}"
   fi
 
