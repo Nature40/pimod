@@ -1,12 +1,13 @@
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 LABEL description="Reconfigure Raspberry Pi images with an easy, Docker-like configuration file"
 LABEL maintainer="hoechst@mathematik.uni-marburg.de"
-LABEL version="0.1"
+LABEL version="0.2"
 
 RUN apt-get update && \
   apt-get install -y \
   binfmt-support \
+  fdisk \
   file \
   kpartx \
   lsof \
