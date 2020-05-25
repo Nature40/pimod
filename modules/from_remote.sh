@@ -15,11 +15,11 @@ unarchive_image() {
   local archive="${1}"
   local tmpfile="${2}"
   local unzip_image
+  unzip_dir=$(mktemp -d)
 
   7z e -bd -o"${unzip_dir}" "${archive}"
 
   # pick largest file, as it is most likely the image
-  unzip_dir=$(mktemp -d)
   # shellcheck disable=SC2012
   unzip_image=$(ls -S -1 "${unzip_dir}" | head -n1)
   mv "${unzip_dir}/${unzip_image}" "${tmpfile}"
