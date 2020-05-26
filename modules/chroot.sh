@@ -31,16 +31,15 @@ chroot_teardown() {
   # ignore further errors
   trap "" ERR
 
-  RUNNING=$(lsof -t "${CHROOT_MOUNT}")
-  if [ "${RUNNING}" ]; then
-    echo -e "\033[0;33m### Warning: Remaining processes (${RUNNING}) are killed.\033[0m"
+  mapfile -t RUNNING < <(lsof -t "${CHROOT_MOUNT}")
+  if [ "${RUNNING[*]}" ]; then
+    echo -e "\033[0;33m### Warning: Remaining processes (${RUNNING[*]}) are killed.\033[0m"
     kill -9 "${RUNNING[@]}"
   fi
   unset RUNNING
 
   qemu_teardown
 
-  # umount "${CHROOT_MOUNT}/boot"
   i=0
   while ! umount -Rv "${CHROOT_MOUNT}/"; do 
     if [ $((i=i+1)) -ge 10 ]; then
