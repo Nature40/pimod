@@ -20,7 +20,7 @@ RUN apt-get update && \
   xz-utils
 
 RUN mkdir /pimod
-COPY pimod.sh modules stages /pimod/
+COPY . /pimod/
 
 ENV PATH="/pimod:${PATH}"
 ENV PIMOD_CACHE=".cache"
