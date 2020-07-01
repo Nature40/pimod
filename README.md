@@ -2,7 +2,7 @@
 [![tests](https://github.com/Nature40/pimod/workflows/tests/badge.svg?branch=master)](https://github.com/Nature40/pimod/actions?query=workflow%3Atests)
 [![shellcheck](https://github.com/Nature40/pimod/workflows/shellcheck/badge.svg?branch=master)](https://github.com/Nature40/pimod/actions?query=workflow%3Ashellcheck)
 
-Reconfigure Raspberry Pi images with an easy, Docker-like configuration file.
+Reconfigure Raspberry Pi images with an easy, Docker-like configuration file. For detailed information [read our paper](https://jonashoechst.de/assets/papers/hoechst2020pimod.pdf).
 
 
 ## About
@@ -163,6 +163,23 @@ RUN tee /bin/example.sh <<EOF
 
 echo "Example output."
 EOF
+```
+
+## Scientific Usage & Citation
+
+If you happen to use pimod in a scientific project, we would very much appreciate if you cited [our scientific paper](https://jonashoechst.de/assets/papers/hoechst2020pimod.pdf):
+
+```bibtex
+@inproceedings{hoechst2020pimod,
+  author = {{Höchst}, Jonas and Penning, Alvar and Lampe, Patrick and Freisleben, Bernd},
+  title = {{PIMOD: A Tool for Configuring Single-Board Computer Operating System Images}},
+  booktitle = {{2020 IEEE Global Humanitarian Technology Conference (GHTC 2020)}},
+  address = {Seattle, USA},
+  days = {29},
+  month = oct,
+  year = {2020},
+  keywords = {Single-Board Computer; Operating System Image; System Provisioning},
+}
 ```
 
 ## Notable Mentions
