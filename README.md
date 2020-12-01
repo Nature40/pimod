@@ -14,11 +14,41 @@ on its x86\_64 host.
 ## Installation, Usage
 ### Debian
 ```bash
-$ sudo apt-get install kpartx qemu qemu-user-static binfmt-support
+$ sudo apt-get install binfmt-support fdisk file kpartx lsof parted qemu qemu-user-static unzip p7zip-full wget xz-utils
 
 $ sudo ./pimod.sh Pifile
 ```
 
+### Docker
+```bash
+# build the docker container
+$ docker build -t pimod .
+
+# run the container privileged to allow loop device usage
+$ docker run --rm --privileged -v $PWD:/pimod pimod pimod.sh examples/RPi-OpenWRT.Pifile
+
+# alternatively use docker-compose 
+$ docker-compose run pimod pimod.sh examples/RPi-OpenWRT.Pifile 
+```
+
+### GitHub Actions
+```yml
+name: tests
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          submodules: recursive
+      - name: Run pimod OpenWRT example
+        uses: Natur40/pimod@v0.2
+        with:
+          pifile: examples/RPi-OpenWRT.Pifile
+```
 
 ## Pifile
 The *Pifile* contains commands to modify the image. However, the *Pifile*
@@ -27,7 +57,7 @@ in different stages.
 
 
 ### Example
-```
+```bash
 $ cat Upgrade.Pifile
 FROM 2018-11-13-raspbian-stretch-lite.img
 
@@ -44,12 +74,6 @@ RUN apt-get install -y sl
 # Upgrade.img image based on the given Raspbian image. This image's size is
 # increased about 100MB, has an enabled UART/serial output, the latest software
 # and sl installed.
-
-# Docker:
-$ ./pimod-docker.sh \
-  Upgrade.Pifile ~/Downloads/2018-11-13-raspbian-stretch-lite.img Upgrade.img
-
-# Plain:
 $ sudo ./pimod.sh Upgrade.Pifile
 
 # Write the new image to a SD card present at /dev/sdc.
@@ -61,15 +85,12 @@ More examples are available in the
 
 
 ### Commands
-#### `FROM`
+#### `FROM [PATH_TO_IMAGE]`, `FROM [URL|`
 `FROM` sets the `SOURCE_IMG` variable to a target. This might be a local file or
 a remote URL, which will be downloaded. This file will become the base for
 the new image.
 
-*Usage:* `FROM PATH_TO_IMAGE`, `FROM URL`
-
-
-#### `TO`
+#### `TO [PATH_TO_IMAGE]`
 `TO` sets the `DEST_IMG` variable to the given file. This file will contain
 the new image. Existing files will be overridden.
 
@@ -80,65 +101,46 @@ the new `DEST_IMG`.
 If neither `TO` is called nor the Pifile indicates the output, `DEST_IMG` will
 default to *rpi.img* in the source file's directory.
 
-*Usage:* `TO PATH_TO_IMAGE`
 
-
-#### `INPLACE`
+#### `INPLACE [PATH_TO_IMAGE]`
 `INPLACE` does not create a copy of the image, but performs all further
 operations on the given image. This is an alternative to `FROM` and `TO`.
 
-*Usage:* `INPLACE PATH_TO_IMAGE`
-
-
-#### `PUMP`
+#### `PUMP [SIZE]`
 `PUMP` increases the image's size about the given amount (suffixes K, M, G are allowed).
 
-*Usage:* `PUMP SIZE`
-
-
-#### `INSTALL`
+#### `INSTALL <MODE> [SOURCE] [DEST]`
 `INSTALL` installs a given file or directory into the destination in the
 image. The optionally permission mode (*chmod*) can be set as the first
 parameter.
 
-*Usage:* `INSTALL [MODE] SOURCE DEST`
-
-
-#### `PATH`
+#### `PATH [/my/guest/path]`
 `PATH` adds the given path to an overlaying PATH variable, used within the `RUN`
 command.
 
-*Usage:* `PATH /my/guest/path`
-
-
-#### `RUN`
+#### `RUN [CMD] [PARAMS ...]`
 `RUN` executes a command in the chrooted image based on QEMU user emulation.
 
 Caveat: because the Pifile is just a Bash script, pipes do not work as one
 might suspect. A possible workaround could be the usage of `bash -c`:
 
-```
+```bash
 RUN bash -c 'hexdump /dev/urandom | head'
 ```
 
-*Usage:* `RUN CMD PARAMS...`
-
-
-#### `HOST`
+#### `HOST [CMD] [PARAMS ...]`
 `HOST` executed a command on the local host and can be used to prepare files, cross-compile software, etc.
 
-*Usage:* `HOST CMD PARAMS...`
 
 
-### Hacks
-Because the *Pifile* is just a Bash script, some ~~dirty~~ brilliant hacks
-are possible.
+### Pifile Extensions
+Because the *Pifile* is just a Bash script, some ~~dirty~~ brilliant hacks and extensions are possible.
 
 
 #### Inherit another Pifile
 Another *Pifile* can be extended by sourcing it in the first line.
 
-```
+```bash
 source Parent.Pifile
 ```
 
@@ -146,7 +148,7 @@ source Parent.Pifile
 #### Bulk execution
 Here documents can be used with the `RUN` command.
 
-```
+```bash
 RUN <<EOF
 apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
@@ -157,7 +159,7 @@ EOF
 #### Inplace Files
 Here documents can also be used to create files inside of the guest system, e.g., by using `tee` or `dd`.
 
-```
+```bash
 RUN tee /bin/example.sh <<EOF
 #!/bin/sh
 

@@ -1,5 +1,9 @@
-name: 'pimod'
+name: 'Run PIMOD'
 description: 'Reconfigure Raspberry Pi images with an easy, Docker-like configuration file'
+branding:
+  icon: 'archive'  
+  color: 'red'
+
 inputs:
   pifile:
     description: 'Pifile to run'
