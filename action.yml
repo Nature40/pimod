@@ -1,0 +1,16 @@
+name: 'pimod'
+description: 'Reconfigure Raspberry Pi images with an easy, Docker-like configuration file'
+inputs:
+  pifile:
+    description: 'Pifile to run'
+    required: true
+    default: 'Pifile'
+runs:
+  using: "composite"
+  steps: 
+    - run: sudo apt-get update
+      shell: bash
+    - run: sudo apt-get install -y binfmt-support file kpartx parted qemu qemu-user-static unzip p7zip-full wget xz-utils
+      shell: bash
+    - run: sudo ${{ github.action_path }}/pimod.sh ${{ inputs.pifile }}
+      shell: bash
