@@ -5,7 +5,7 @@
 # Usage: PUMP SIZE_IN_MB
 PUMP() {
   if [[ -b "${DEST_IMG}" ]]; then
-    echo -e "\033[0;31m### Error: Block device ${DEST_IMG} cannot be pumped.s\033[0m"
+    echo -e "\033[0;31m### Error: Block device ${DEST_IMG} cannot be pumped.\033[0m"
     return 1
   fi
 
@@ -28,7 +28,13 @@ EOF
   local loop
   loop=$(mount_image "${DEST_IMG}")
 
-  e2fsck -y -f "/dev/mapper/${loop}p${IMG_ROOT}"
+  e2fsck -p -f "/dev/mapper/${loop}p${IMG_ROOT}" || (
+    ERR="${?}"
+    if [ "${ERR}" -gt 2 ]; then
+      echo -e "\033[0;31m### Error: File system repair failed (${ERR}).\033[0m"
+      return "${ERR}"
+    fi
+  )
   resize2fs "/dev/mapper/${loop}p${IMG_ROOT}"
 
   fdisk -l "/dev/${loop}"
