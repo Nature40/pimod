@@ -56,6 +56,15 @@ execute_pifile() {
   # shellcheck disable=SC1090
   . "$1"
   post_stage
+
+  pushd "$(dirname "$0")/modules" > /dev/null || exit 2
+  . "../stages/00-commands.sh"
+  . "../stages/40-postprocess.sh"
+  popd > /dev/null || exit 2
+  pre_stage
+  # shellcheck disable=SC1090
+  . "$1"
+  post_stage
 }
 
 

@@ -6,12 +6,6 @@ pre_stage() {
   resolv_conf_setup
 }
 
-post_stage() {
-  resolv_conf_teardown
-
-  chroot_teardown "${DEST_IMG}"
-}
-
 # INSTALL installs a given file or directory into the destination in the
 # image. The optionally permission mode (chmod) can be set as the first
 # parameter.
