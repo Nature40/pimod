@@ -41,7 +41,7 @@ from_remote_fetch() {
   else
     echo "Fetching remote: ${url}"
     mkdir -p "$(dirname "${download_path}")"
-    wget --progress=dot:giga -O "${download_path}" "${url}"
+    wget --progress=dot:giga -O "${download_path}" "${url}" || rm "${download_path}"
   fi
 
   local tmpfile
