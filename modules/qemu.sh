@@ -15,7 +15,7 @@ qemu_setup() {
     local qemu_path
     local bin_path
 
-    qemu_path=$(which "qemu-${arch}-static")
+    qemu_path=$(command -v "qemu-${arch}-static")
     bin_path=$(dirname "${qemu_path}")
 
     # recreate bin folders
