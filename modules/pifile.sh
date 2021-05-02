@@ -26,6 +26,9 @@ execute_pifile() {
     return 1
   fi
 
+  grep -q $'\r' "${1}" && \
+    echo -e "\033[0;33m### Warning: Pifile contains CRLF, please use a Unix-like newline.\033[0m"
+
   inspect_pifile_name "$1"
 
   bash -n "$1"
