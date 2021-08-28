@@ -98,5 +98,5 @@ INPLACE() {
 #
 # Usage: INCLUDE path/to/pifile
 INCLUDE() {
-  SOURCE "${1}.Pifile"
+  source "${1}.Pifile"
 }
