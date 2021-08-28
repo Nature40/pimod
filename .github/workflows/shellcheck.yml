@@ -1,19 +1,22 @@
 name: shellcheck
 
-on: push
+on: [push, pull_request]
 
 jobs:
-  build:
+  shellcheck:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           submodules: recursive
+
       - name: Shellcheck pimod.sh
         run: shellcheck -x pimod.sh
+
       - name: Shellcheck modules/*.sh
         run: cd modules && shellcheck -x *.sh
+
       - name: Shellcheck stages/*.sh
         run: cd stages && shellcheck -x *.sh

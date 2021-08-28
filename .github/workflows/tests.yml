@@ -1,14 +1,33 @@
 name: tests
-on: push
+
+on: [push, pull_request]
 
 jobs:
-  build:
+  test-local:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
         with:
           submodules: recursive
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y binfmt-support file kpartx parted qemu qemu-user-static unzip p7zip-full wget xz-utils
+        shell: bash
+
+      - name: Run pimod OpenWRT example
+        run: sudo ./pimod.sh examples/RPi-OpenWRT.Pifile
+
+  test-action:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
       - name: Run pimod OpenWRT example
         uses: Nature40/pimod@HEAD
         with:
