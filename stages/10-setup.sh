@@ -93,10 +93,3 @@ INPLACE() {
   FROM "$@"
   TO "$1"
 }
-
-# INCLUDE sources the provided Pifile
-#
-# Usage: INCLUDE path/to/pifile
-INCLUDE() {
-  source "${1}.Pifile"
-}

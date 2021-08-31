@@ -31,8 +31,13 @@ INPLACE() {
   :
 }
 
+
+# INCLUDE sources the provided Pifile
+#
+# Usage: INCLUDE path/to/pifile[.Pifile]
 INCLUDE() {
-  :
+  filename="${$1%.*}"
+  SOURCE "${filename}.Pifile"
 }
 
 # Stage 2x
