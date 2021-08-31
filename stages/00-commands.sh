@@ -37,7 +37,7 @@ INPLACE() {
 # Usage: INCLUDE path/to/pifile[.Pifile]
 INCLUDE() {
   filename="${$1%.*}"
-  SOURCE "${filename}.Pifile"
+  source "${filename}.Pifile"
 }
 
 # Stage 2x
