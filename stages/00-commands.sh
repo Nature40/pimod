@@ -18,6 +18,14 @@ post_stage() {
   :
 }
 
+# INCLUDE sources the provided Pifile
+#
+# Usage: INCLUDE path/to/pifile[.Pifile]
+INCLUDE() {
+  filename="${1%.*}"
+  source "${filename}.Pifile"
+}
+
 # Stage 1x
 FROM() {
   :
@@ -31,14 +39,6 @@ INPLACE() {
   :
 }
 
-
-# INCLUDE sources the provided Pifile
-#
-# Usage: INCLUDE path/to/pifile[.Pifile]
-INCLUDE() {
-  filename="${$1%.*}"
-  source "${filename}.Pifile"
-}
 
 # Stage 2x
 PUMP() {
