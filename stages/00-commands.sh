@@ -18,6 +18,15 @@ post_stage() {
   :
 }
 
+# INCLUDE sources the provided Pifile
+#
+# Usage: INCLUDE path/to/pifile[.Pifile]
+INCLUDE() {
+  filename="${1%.*}"
+  # shellcheck disable=SC1090
+  source "${filename}.Pifile"
+}
+
 # Stage 1x
 FROM() {
   :
@@ -30,6 +39,7 @@ TO() {
 INPLACE() {
   :
 }
+
 
 # Stage 2x
 PUMP() {

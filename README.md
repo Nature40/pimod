@@ -106,6 +106,12 @@ default to *rpi.img* in the source file's directory.
 `INPLACE` does not create a copy of the image, but performs all further
 operations on the given image. This is an alternative to `FROM` and `TO`.
 
+#### `INCLUDE [PATH_TO_PIFILE]`
+`INCLUDE` includes the provided Pifile in the current one for modularity and 
+re-use. The included file _has_ to have a `.Pifile` extension which need not be 
+specified.
+
+
 #### `PUMP [SIZE]`
 `PUMP` increases the image's size about the given amount (suffixes K, M, G are allowed).
 
