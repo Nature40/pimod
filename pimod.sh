@@ -22,17 +22,21 @@ Usage: ${0} [Options] Pifile
 Options:
   -c cache  Define cache location.
   -d        Debug on failure; run an interactive shell before tear down
+  -t        Trace each executed command for debugging.
   -h        Print this help message.
 EOF
 }
 
-while getopts "c:dh" opt; do
+while getopts "c:dth" opt; do
   case "${opt}" in
   c)
     PIMOD_CACHE="${OPTARG}"
     ;;
   d)
     PIMOD_DEBUG=1
+    ;;
+  t)
+    set -x
     ;;
   h)
     show_help

@@ -33,6 +33,17 @@ For detailed information [read our paper](https://jonashoechst.de/assets/papers/
 
 
 ## Installation, Usage
+```
+pimod pimod.sh -h
+Usage: pimod.sh [Options] Pifile
+
+Options:
+  -c cache  Define cache location.
+  -d        Debug on failure; run an interactive shell before tear down
+  -t        Trace each executed command for debugging.
+  -h        Print this help message.
+```
+
 ### Debian
 ```bash
 sudo apt-get install binfmt-support fdisk file kpartx lsof parted qemu qemu-user-static unzip p7zip-full wget xz-utils
