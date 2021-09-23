@@ -113,12 +113,14 @@ $ dd if=Upgrade.img of=/dev/sdc bs=4M status=progress
 
 
 ### Commands
-#### `FROM [PATH_TO_IMAGE]`, `FROM [URL|`
+#### `FROM PATH_TO_IMAGE [PARTITION_NO]`, `FROM URL [PARTITION_NO]`
 `FROM` sets the `SOURCE_IMG` variable to a target.
 This might be a local file or a remote URL, which will be downloaded.
 This file will become the base for the new image.
 
-#### `TO [PATH_TO_IMAGE]`
+By default, the Raspberry Pi's default partition number 2 will be used, but can be altered for other targets.
+
+#### `TO PATH_TO_IMAGE`
 `TO` sets the `DEST_IMG` variable to the given file.
 This file will contain the new image.
 Existing files will be overridden.
@@ -128,25 +130,25 @@ The part before this suffix will be the new `DEST_IMG`.
 
 If neither `TO` is called nor the Pifile indicates the output, `DEST_IMG` will default to *rpi.img* in the source file's directory.
 
-#### `INPLACE [PATH_TO_IMAGE]`
+#### `INPLACE FROM_ARGS...`
 `INPLACE` does not create a copy of the image, but performs all further operations on the given image.
 This is an alternative to `FROM` and `TO`.
 
-#### `INCLUDE [PATH_TO_PIFILE]`
+#### `INCLUDE PATH_TO_PIFILE`
 `INCLUDE` includes the provided Pifile in the current one for modularity and re-use.
 The included file _has_ to have a `.Pifile` extension which need not be specified.
 
-#### `PUMP [SIZE]`
+#### `PUMP SIZE`
 `PUMP` increases the image's size about the given amount (suffixes K, M, G are allowed).
 
-#### `INSTALL <MODE> [SOURCE] [DEST]`
+#### `INSTALL <MODE> SOURCE DEST`
 `INSTALL` installs a given file or directory into the destination in the image.
 The optionally permission mode (*chmod*) can be set as the first parameter.
 
-#### `PATH [/my/guest/path]`
+#### `PATH /my/guest/path`
 `PATH` adds the given path to an overlaying PATH variable, used within the `RUN` command.
 
-#### `RUN [CMD] [PARAMS ...]`
+#### `RUN CMD [PARAMS...]`
 `RUN` executes a command in the chrooted image based on QEMU user emulation.
 
 Caveat: because the Pifile is just a Bash script, pipes do not work as one might suspect.
@@ -156,7 +158,7 @@ A possible workaround could be the usage of `bash -c`:
 RUN bash -c 'hexdump /dev/urandom | head'
 ```
 
-#### `HOST [CMD] [PARAMS ...]`
+#### `HOST CMD [PARAMS...]`
 `HOST` executed a command on the local host and can be used to prepare files, cross-compile software, etc.
 
 

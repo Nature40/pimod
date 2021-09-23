@@ -39,8 +39,11 @@ post_stage() {
 # a remote URL, which will be downloaded. This file will become the base for
 # the new image.
 #
-# Usage: FROM PATH_TO_IMAGE
-#        FROM URL
+# By default, the Raspberry Pi's default partition number 2 will be used, but
+# can be altered for other targets.
+#
+# Usage: FROM PATH_TO_IMAGE [PARTITION_NO]
+#        FROM URL [PARTITION_NO]
 FROM() {
   echo -e "\033[0;32m### FROM ${*}\033[0m"
 
@@ -83,7 +86,7 @@ TO() {
 # INPLACE does not create a copy of the image, but performs all further
 # operations on the given image. This is an alternative to FROM and TO.
 #
-# Usage: INPLACE PATH_TO_IMAGE
+# Usage: INPLACE FROM_ARGS...
 INPLACE() {
   if from_remote_valid "${1}"; then
     echo -e "\033[0;31m### Error: INPLACE cannot be used with a URL.\033[0m"
