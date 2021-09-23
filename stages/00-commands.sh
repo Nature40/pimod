@@ -23,6 +23,7 @@ post_stage() {
 # Usage: INCLUDE path/to/pifile[.Pifile]
 INCLUDE() {
   filename="${1%.*}"
+  # shellcheck disable=SC1090
   source "${filename}.Pifile"
 }
 
