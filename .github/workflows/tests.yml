@@ -6,6 +6,10 @@ jobs:
   test-local:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        image: [ "RPi-OpenWRT", "RPi-RaspberryPiOSLite" ]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -13,11 +17,11 @@ jobs:
           submodules: recursive
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y binfmt-support file kpartx parted qemu qemu-user-static unzip p7zip-full wget xz-utils
+        run: sudo apt-get update && sudo apt-get install -y binfmt-support file kpartx lsof p7zip-full parted qemu qemu-user-static unzip wget xz-utils
         shell: bash
 
       - name: Run pimod OpenWRT example
-        run: sudo ./pimod.sh examples/RPi-OpenWRT.Pifile
+        run: sudo ./pimod.sh examples/${{ matrix.image }}.Pifile
 
   test-action:
     runs-on: ubuntu-latest

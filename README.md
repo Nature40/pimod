@@ -46,7 +46,8 @@ Options:
 
 ### Debian
 ```bash
-sudo apt-get install binfmt-support fdisk file kpartx lsof parted qemu qemu-user-static unzip p7zip-full wget xz-utils
+sudo apt-get install binfmt-support file kpartx lsof p7zip-full parted qemu qemu-user-static unzip wget xz-utils
+
 sudo ./pimod.sh Pifile
 ```
 

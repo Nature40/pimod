@@ -12,18 +12,10 @@ PUMP() {
   echo -e "\033[0;32m### PUMP ${1}\033[0m"
   dd if=/dev/zero bs="${1}" count=1 >> "${DEST_IMG}"
 
-  # shellcheck disable=SC2207
-  TARGET_DETAILS=($(fdisk -l "${DEST_IMG}" | tail -n1))
-  (fdisk "${DEST_IMG}" || echo "Continue...") <<EOF
-delete
-${IMG_ROOT}
-new
-primary
-${IMG_ROOT}
-${TARGET_DETAILS[1]}
-
-w
-EOF
+  # Fix the GPT if necessary and resize the partition afterwards.
+  # The fix is currently kind of hackish..
+  echo -e "Fix\n" | parted ---pretend-input-tty "${DEST_IMG}" print
+  parted -s "${DEST_IMG}" resizepart "${IMG_ROOT}" "100%"
 
   local loop
   loop=$(mount_image "${DEST_IMG}")
@@ -36,8 +28,6 @@ EOF
     fi
   )
   resize2fs "/dev/mapper/${loop}p${IMG_ROOT}"
-
-  fdisk -l "/dev/${loop}"
 
   umount_image "${loop}"
 }
