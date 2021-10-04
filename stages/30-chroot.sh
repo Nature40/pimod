@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 pre_stage() {
   chroot_setup "${DEST_IMG}" "${IMG_ROOT}"
 

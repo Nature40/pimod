@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # PUMP increases the image's size about the given amount of megabytes.
 #
 # Usage: PUMP SIZE_IN_MB

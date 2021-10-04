@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 post_stage() {
   resolv_conf_teardown
 

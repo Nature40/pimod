@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # GUEST_PATH is an overlay PATH variable used within RUN. Initially, it is
 # identical to the PATH variable of the host.
 GUEST_PATH="${PATH}"

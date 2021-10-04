@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # chroot_setup mounts the given image file and prepares a chroot.
 # Usage: chroot_setup PATH_TO_IMAGE
 chroot_setup() {

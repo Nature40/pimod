@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 QEMU_ARCHS="arm armeb aarch64"
 
 qemu_setup() {

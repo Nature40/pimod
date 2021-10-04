@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # inspect_pifile_name checks the name of the given Pifile (first parameter)
 # and sets the internal DEST_IMG variable to the first part of this filename,
 # if the filename has the format of XYZ.Pifile, with XYZ being alphanumeric

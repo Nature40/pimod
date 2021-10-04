@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # mount_image mounts the given image file as a loop device and "returns"/prints
 # the name of the loop device (e.g. loop0).
 # Usage: mount_image PATH_TO_IMAGE

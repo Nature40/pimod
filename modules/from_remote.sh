@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 if [ -z "${PIMOD_CACHE+x}" ]; then 
   PIMOD_CACHE="/var/cache/pimod"
 fi

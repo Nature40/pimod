@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # resolv_conf_setup checks the /etc/resolv.conf file within an image and remaps
 # it, if necessary.
 resolv_conf_setup() {

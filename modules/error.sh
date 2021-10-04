@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 if [ -z "${PIMOD_DEBUG+x}" ]; then
   PIMOD_DEBUG=0
 fi

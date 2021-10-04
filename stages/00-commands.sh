@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # The execution of a Pifile has multiple stages. However, the file will be
 # sourced in each stage. Therefore this file defines a nop version of each known
 # command and will disable them. This is kind of hacky, tbh.

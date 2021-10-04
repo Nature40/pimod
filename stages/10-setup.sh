@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 post_stage() {
   if [[ -z ${SOURCE_IMG+x} ]]; then
     echo -e "\033[0;31m### Error: No source was set, use FROM or INPLACE\033[0m"
