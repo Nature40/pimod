@@ -26,7 +26,8 @@ qemu_setup() {
     QEMU_MOUNTS=("${QEMU_MOUNTS[@]}" "${CHROOT_MOUNT}/${qemu_path}")
 
     # enable arch
-    update-binfmts --enable "qemu-${arch}"
+    update-binfmts --enable "qemu-${arch}" || \
+      echo -e "\033[0;33m### Warning: Architecture ${arch} might not be supported.\033[0m"
   done
 }
 
