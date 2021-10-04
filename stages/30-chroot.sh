@@ -52,6 +52,14 @@ PATH() {
   echo -e "\033[0;32m### PATH ${GUEST_PATH}\033[0m"
 }
 
+# WORKDIR sets the working directory within the image.
+#
+# Usage: WORKDIR /my/guest/path
+WORKDIR() {
+  workdir_set "${1}"
+  echo -e "\033[0;32m### WORKDIR ${WORKDIR_PATH}\033[0m"
+}
+
 # RUN executes a command in the chrooted image based on QEMU user emulation.
 #
 # Caveat: because the Pifile is just a Bash script, pipes do not work as one
@@ -61,7 +69,8 @@ PATH() {
 # Usage: RUN CMD PARAMS...
 RUN() {
   echo -e "\033[0;32m### RUN ${*}\033[0m"
-  PATH=${GUEST_PATH} chroot "${CHROOT_MOUNT}" "${@}"
+  PATH=${GUEST_PATH} chroot "${CHROOT_MOUNT}" \
+    /bin/sh -c "cd ${WORKDIR_PATH}; $(printf ' %q' "$@")"
 }
 
 # HOST executed a command on the local host and can be used to prepare files, 

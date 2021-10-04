@@ -149,6 +149,9 @@ The optionally permission mode (*chmod*) can be set as the first parameter.
 #### `PATH /my/guest/path`
 `PATH` adds the given path to an overlaying PATH variable, used within the `RUN` command.
 
+#### `WORKDIR /my/guest/path`
+`WORKDIR` sets the working directory within the image.
+
 #### `RUN CMD [PARAMS...]`
 `RUN` executes a command in the chrooted image based on QEMU user emulation.
 

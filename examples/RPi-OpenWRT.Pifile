@@ -20,7 +20,8 @@ RUN hello
 
 # test if INSTALL works
 INSTALL "README.md" "/tmp/"
-RUN head -n1 "/tmp/README.md"
+WORKDIR /tmp
+RUN head -n1 "README.md"
 
 # test an INCLUDE - both with and without the .Pifile extension
 INCLUDE examples/Module-Hello.Pifile

@@ -12,6 +12,7 @@ pushd "$(dirname "$0")" > /dev/null
 . ./modules/pifile.sh
 . ./modules/qemu.sh
 . ./modules/resolv_conf.sh
+. ./modules/workdir.sh
 
 popd > /dev/null
 

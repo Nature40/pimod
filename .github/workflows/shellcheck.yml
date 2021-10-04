@@ -14,9 +14,3 @@ jobs:
 
       - name: Shellcheck pimod.sh
         run: shellcheck -s bash -x pimod.sh
-
-      - name: Shellcheck modules/*.sh
-        run: cd modules && shellcheck -s bash -x *.sh
-
-      - name: Shellcheck stages/*.sh
-        run: cd stages && shellcheck -s bash -x *.sh

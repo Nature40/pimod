@@ -23,16 +23,17 @@ jobs:
       - name: Run pimod OpenWRT example
         run: sudo ./pimod.sh examples/${{ matrix.image }}.Pifile
 
-  test-action:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive
-
-      - name: Run pimod OpenWRT example
-        uses: Nature40/pimod@HEAD
-        with:
-          pifile: examples/RPi-OpenWRT.Pifile
+# https://github.com/Nature40/pimod/issues/36
+#  test-action:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v2
+#        with:
+#          submodules: recursive
+#
+#      - name: Run pimod OpenWRT example
+#        uses: Nature40/pimod@HEAD
+#        with:
+#          pifile: examples/RPi-OpenWRT.Pifile
