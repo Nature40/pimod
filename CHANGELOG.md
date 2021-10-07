@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - WORKDIR command to specify the working directory within the image.
 
+### Fixed
+- Brought latest version of pimod back to GitHub Marketplace.
+
 ## [0.3.1] - 2021-10-04
 ### Added
 - pimod.sh -t: trace executed commands for debugging.
