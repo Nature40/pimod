@@ -70,7 +70,7 @@ WORKDIR() {
 RUN() {
   echo -e "\033[0;32m### RUN ${*}\033[0m"
   PATH=${GUEST_PATH} chroot "${CHROOT_MOUNT}" \
-    /bin/sh -c "cd ${WORKDIR_PATH}; $(printf ' %q' "$@")"
+    /bin/sh -c "cd ${WORKDIR_PATH}; $(esceval "$@")"
 }
 
 # HOST executed a command on the local host and can be used to prepare files, 
