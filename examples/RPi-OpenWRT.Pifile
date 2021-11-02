@@ -26,3 +26,9 @@ RUN head -n1 "README.md"
 # test an INCLUDE - both with and without the .Pifile extension
 INCLUDE examples/Module-Hello.Pifile
 INCLUDE examples/Module-Hello
+
+# test a multiline command
+RUN sh -c "
+    echo hello
+    echo world
+"

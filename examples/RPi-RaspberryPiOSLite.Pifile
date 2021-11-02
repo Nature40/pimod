@@ -6,3 +6,9 @@ RUN apt-get update
 RUN apt-get install -y cowsay
 
 RUN /usr/games/cowsay "huhu pimod~"
+
+# test a multiline command
+RUN bash -c "
+    echo hello
+    echo world
+"
