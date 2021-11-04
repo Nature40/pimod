@@ -16,7 +16,8 @@ RUN apt-get update && \
   qemu-user-static \
   unzip \
   wget \
-  xz-utils
+  xz-utils \
+  units
 
 RUN mkdir /pimod
 COPY . /pimod/
