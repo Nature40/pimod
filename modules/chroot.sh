@@ -10,7 +10,7 @@ chroot_setup() {
   mount "${loop_root}" "${CHROOT_MOUNT}/"
 
   mount --bind /dev "${CHROOT_MOUNT}/dev"
-  mount --bind /sys "${CHROOT_MOUNT}/sys"
+  mount --rbind /sys "${CHROOT_MOUNT}/sys"
   mount --bind /proc "${CHROOT_MOUNT}/proc"
   mount --bind /dev/pts "${CHROOT_MOUNT}/dev/pts"
 
@@ -39,7 +39,7 @@ chroot_teardown() {
   qemu_teardown
 
   i=0
-  while ! umount -Rv "${CHROOT_MOUNT}/"; do 
+  while ! umount -Rflv "${CHROOT_MOUNT}/"; do
     if [ $((i=i+1)) -ge 10 ]; then
       return 102
     fi
