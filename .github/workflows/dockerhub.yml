@@ -1,0 +1,43 @@
+name: Build and upload DockerHub image
+
+on: [push]
+
+env:
+  DOCKERHUB_USER: tvoneicken
+  DOCKER_IMAGE: pimod
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  build-all:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: .
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          # login uses access token: https://docs.docker.com/docker-hub/access-tokens/
+          username: ${{ env.DOCKERHUB_USER}}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.DOCKERHUB_USER }}/${{ env.DOCKER_IMAGE }}
+          flavor: |
+            latest=true
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
