@@ -3,8 +3,8 @@ name: Build and upload DockerHub image
 on: [push]
 
 env:
-  DOCKERHUB_USER: tvoneicken
-  DOCKER_IMAGE: pimod
+  DOCKERHUB_USER: hoechst
+  DOCKER_IMAGE: nature40/pimod
 
 permissions:
   id-token: write
@@ -30,7 +30,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.DOCKERHUB_USER }}/${{ env.DOCKER_IMAGE }}
+          images: ${{ env.DOCKER_IMAGE }}
           flavor: |
             latest=true
       
