@@ -1,6 +1,7 @@
 # pimod
 [![tests](https://github.com/Nature40/pimod/workflows/tests/badge.svg?branch=master)](https://github.com/Nature40/pimod/actions?query=workflow%3Atests)
 [![shellcheck](https://github.com/Nature40/pimod/workflows/shellcheck/badge.svg?branch=master)](https://github.com/Nature40/pimod/actions?query=workflow%3Ashellcheck)
+[![Build and upload DockerHub image](https://github.com/Nature40/pimod/actions/workflows/dockerhub.yml/badge.svg)](https://github.com/Nature40/pimod/actions/workflows/dockerhub.yml)
 
 Reconfigure Raspberry Pi images with an easy, Docker-like configuration file.
 
