@@ -61,6 +61,15 @@ docker run --rm --privileged -v $PWD:/pimod pimod pimod.sh examples/RPi-OpenWRT.
 
 # …alternatively use docker-compose
 docker-compose run pimod pimod.sh examples/RPi-OpenWRT.Pifile
+
+# …alternatively use the latest image directly from dockerhub
+# the following commandline maps the current dir to /files
+docker run --rm --privileged \
+    -v $PWD:/files \
+    -e PATH=/pimod:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    --workdir=/files \
+    nature40/pimod \
+    pimod.sh /files/RPi-OpenWRT.pifile
 ```
 
 ### GitHub Actions
