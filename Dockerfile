@@ -7,11 +7,11 @@ LABEL version="0.2.1"
 RUN apt-get update && \
   apt-get install -y \
   binfmt-support \
+  fdisk \
   file \
   kpartx \
   lsof \
   p7zip-full \
-  parted \
   qemu \
   qemu-user-static \
   unzip \

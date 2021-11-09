@@ -26,10 +26,7 @@ PUMP() {
 
   dd if=/dev/zero bs="${BS}" count="${COUNT}" >> "${DEST_IMG}"
 
-  # Fix the GPT if necessary and resize the partition afterwards.
-  # The fix is currently kind of hackish..
-  echo -e "Fix\n" | parted ---pretend-input-tty "${DEST_IMG}" print
-  parted -s "${DEST_IMG}" resizepart "${IMG_ROOT}" "100%"
+  echo ", +" | sfdisk -N "${IMG_ROOT}" "${DEST_IMG}"
 
   local loop
   loop=$(mount_image "${DEST_IMG}")

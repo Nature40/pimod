@@ -1,0 +1,3 @@
+FROM https://developer.nvidia.com/jetson-nano-sd-card-image 1
+
+PUMP 100M

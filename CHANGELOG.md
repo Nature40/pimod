@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.3] - 2021-11-09
+### Fixed
+- PARTUUIDs got rewritten by parted - replaced by sfdisk
+
 ## [0.4.2] - 2021-11-04
 ### Fixed
 - Limitedness of PUMP command
