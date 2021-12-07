@@ -5,6 +5,7 @@ set -euE
 pushd "$(dirname "$0")" > /dev/null
 
 . ./modules/chroot.sh
+. ./modules/env.sh
 . ./modules/error.sh
 . ./modules/esceval.sh
 . ./modules/from_remote.sh

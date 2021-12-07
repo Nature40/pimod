@@ -162,6 +162,22 @@ The optionally permission mode (*chmod*) can be set as the first parameter.
 #### `WORKDIR /my/guest/path`
 `WORKDIR` sets the working directory within the image.
 
+#### `ENV KEY [VALUE]`
+`ENV` either sets or unsets an environment variable to be used within the image.
+If two parameters are given, the first is the key and the second the value.
+If one parameter is given, the environment variable will be removed.
+
+An environment variable can be either used via `$VAR` within another sub-shell (`sh -c 'echo $VAR'`) or substituted beforehand via `@@VAR@@`.
+
+```
+ENV FOO BAR
+
+RUN sh -c 'echo FOO = $FOO'   # FOO = BAR - substituted within a sh in the image
+RUN echo FOO = @@FOO@@        # FOO = BAR - substituted beforehand via pimod
+
+ENV FOO
+```
+
 #### `RUN CMD [PARAMS...]`
 `RUN` executes a command in the chrooted image based on QEMU user emulation.
 

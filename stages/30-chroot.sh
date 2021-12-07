@@ -60,6 +60,39 @@ WORKDIR() {
   echo -e "\033[0;32m### WORKDIR ${WORKDIR_PATH}\033[0m"
 }
 
+# ENV either sets or unsets an environment variable to be used within the image.
+# If two parameters are given, the first is the key and the second the value.
+# If one parameter is given, the environment variable will be removed.
+#
+# An environment variable can be either used via $VAR within another sub-shell
+# (sh -c 'echo $VAR') or substituted beforehand via @@VAR@@.
+#
+# Usage: ENV KEY [VALUE]
+ENV() {
+  local key=""
+  local value=""
+
+  case "$#" in
+    "1")
+      key="$1"
+      env_vars_del "$key"
+      ;;
+
+    "2")
+      key="$1"
+      value="$2"
+      env_vars_set "$key" "$value"
+      ;;
+
+    *)
+      echo -e "\033[0;31m### Error: ENV KEY [VALUE]\033[0m"
+      return 1
+      ;;
+  esac
+
+  echo -e "\033[0;32m### ENV ${key}=${value}\033[0m"
+}
+
 # RUN executes a command in the chrooted image based on QEMU user emulation.
 #
 # Caveat: because the Pifile is just a Bash script, pipes do not work as one
@@ -69,8 +102,12 @@ WORKDIR() {
 # Usage: RUN CMD PARAMS...
 RUN() {
   echo -e "\033[0;32m### RUN ${*}\033[0m"
+
+  local cmd_esceval="$(esceval "$@")"
+  local cmd_env_subst="$(env_vars_subst "$cmd_esceval")"
+
   PATH=${GUEST_PATH} chroot "${CHROOT_MOUNT}" \
-    /bin/sh -c "cd ${WORKDIR_PATH}; $(esceval "$@")"
+    /bin/sh -c "cd ${WORKDIR_PATH}; $(env_vars_export_cmd) ${cmd_env_subst}"
 }
 
 # HOST executed a command on the local host and can be used to prepare files, 

@@ -12,3 +12,13 @@ RUN bash -c "
     echo hello
     echo world
 "
+
+# test environment vars via ENV
+ENV FOO BAR
+RUN sh -c 'echo FOO = $FOO'
+RUN echo FOO = @@FOO@@
+
+# unset FOO again
+ENV FOO
+RUN sh -c 'echo FOO = $FOO'
+RUN echo FOO = @@FOO@@
