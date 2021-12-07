@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## How to draft a release?
+1. Update this `CHANGELOG.md` file:
+    1. Add a new headline for the next release version below _Unreleased_.
+    2. Add a link for the next release similar to the others to the bottom and update the _Unreleased_ URL.
+2. Update the `version` within the `Dockerfile`.
+3. Create a commit for the release.
+4. Create a (signed) git tag in the form of `vX.Y.Z`, e.g., `v0.1.0` or `v1.2.3`.
+5. Push both the commit and the tag.
+6. Create a GitHub release via the web UI.
+   The title should be `${VERSION} - ${YYYY-MM-DD}` and the description should contain the section from this `CHANGELOG.md`.
+
 ## [Unreleased]
 ### Added
 - New `ENV` command for environment variables.
