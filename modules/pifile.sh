@@ -31,41 +31,18 @@ execute_pifile() {
 
   bash -n "$1"
 
-  pushd "$(dirname "$0")/modules" > /dev/null || exit 2
-  . "../stages/00-commands.sh"
-  . "../stages/10-setup.sh"
-  popd > /dev/null || exit 2
-  pre_stage
-  # shellcheck disable=SC1090
-  . "$1"
-  post_stage
+  declare -a stages=( "10-setup" "20-prepare" "30-chroot" "40-postprocess" )
+  for stage in "${stages[@]}"; do
+    pushd "$(dirname "$0")/modules" > /dev/null || exit 2
+    . "../stages/00-commands.sh"
+    . "../stages/${stage}.sh"
+    popd > /dev/null || exit 2
 
-  pushd "$(dirname "$0")/modules" > /dev/null || exit 2
-  . "../stages/00-commands.sh"
-  . "../stages/20-prepare.sh"
-  popd > /dev/null || exit 2
-  pre_stage
-  # shellcheck disable=SC1090
-  . "$1"
-  post_stage
+    pre_stage
 
-  pushd "$(dirname "$0")/modules" > /dev/null || exit 2
-  . "../stages/00-commands.sh"
-  . "../stages/30-chroot.sh"
-  popd > /dev/null || exit 2
-  pre_stage
-  # shellcheck disable=SC1090
-  . "$1"
-  post_stage
+    # shellcheck disable=SC1090
+    . "$1"
 
-  pushd "$(dirname "$0")/modules" > /dev/null || exit 2
-  . "../stages/00-commands.sh"
-  . "../stages/40-postprocess.sh"
-  popd > /dev/null || exit 2
-  pre_stage
-  # shellcheck disable=SC1090
-  . "$1"
-  post_stage
+    post_stage
+  done
 }
-
-
