@@ -14,10 +14,11 @@ RUN apt-get update && \
   p7zip-full \
   qemu \
   qemu-user-static \
+  units \
   unzip \
   wget \
-  xz-utils \
-  units
+  xxhash \
+  xz-utils
 
 RUN mkdir /pimod
 COPY . /pimod/

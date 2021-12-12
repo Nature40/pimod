@@ -1,4 +1,4 @@
-if [ -z "${PIMOD_CACHE+x}" ]; then 
+if [ -z "${PIMOD_CACHE+x}" ]; then
   PIMOD_CACHE="/var/cache/pimod"
 fi
 
@@ -29,7 +29,7 @@ from_remote_fetch() {
   local url
   local url_path
   local download_path
-  
+
   url="${1}"
   url_path=$(echo "${url}" | sed 's/.*:\/\///')
   download_path="${PIMOD_CACHE}/${url_path}"
@@ -82,4 +82,50 @@ from_remote_fetch() {
 
   export SOURCE_IMG="${tmpfile}"
   export SOURCE_IMG_TMP=1
+}
+
+# cache_mk_hash calculates a hash for the tuple of an image and a command.
+# Usage: cache_mk_hash IMG_FILE "RUN whoami"
+cache_mk_hash() {
+  local img_hash
+  local cmd_hash
+
+  img_hash="$(xxh128sum "${1}" | awk '{ print $1 }')"
+  cmd_hash="$(xxh128sum - <<< "${2}" | awk '{ print $1 }')"
+
+  xxh128sum - <<< "${img_hash}${cmd_hash}" | awk '{ print $1 }'
+}
+
+# cache_get_path returns the path for a snapshot.
+# Usage: cache_get_path HASH
+cache_get_path() {
+  echo "${PIMOD_CACHE}/__checkpoint__/${1}"
+}
+
+# cache_img_checkpoint stores a checkpoint for the current state of an image.
+# Usage: cache_img_checkpoint HASH IMG
+cache_img_checkpoint() {
+  local cache_path
+  cache_path="$(cache_get_path "${1}")"
+
+  mkdir -p "$(dirname "${cache_path}")"
+  if [[ ! -f "${cache_path}" ]]; then
+    cp --reflink=auto "${2}" "${cache_path}"
+  fi
+}
+
+# cache_img_chk_load checks if a checkpoint does already exists and might loads
+# it. The function's exit code says if the cache was used (0) or not (1).
+# Usage: cache_img_chk_load HASH IMG
+cache_img_chk_load() {
+  local cache_path
+  cache_path="$(cache_get_path "${1}")"
+
+  echo ">>> cache_img_chk_load ${*}"
+
+  if [[ ! -f "${cache_path}" ]]; then
+    return 1
+  else
+    cp --reflink=auto "${cache_path}" "${2}"
+  fi
 }

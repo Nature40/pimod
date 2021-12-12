@@ -4,11 +4,11 @@ set -euE
 
 pushd "$(dirname "$0")" > /dev/null
 
+. ./modules/cache.sh
 . ./modules/chroot.sh
 . ./modules/env.sh
 . ./modules/error.sh
 . ./modules/esceval.sh
-. ./modules/from_remote.sh
 . ./modules/mount.sh
 . ./modules/path.sh
 . ./modules/pifile.sh
@@ -24,19 +24,22 @@ Usage: ${0} [Options] Pifile
 
 Options:
   -c cache  Define cache location.
-  -d        Debug on failure; run an interactive shell before tear down
+  -d        Debug on failure; run an interactive shell before tear down.
+  -s        Save cache checkpoints for each command.
   -t        Trace each executed command for debugging.
   -h        Print this help message.
 EOF
 }
 
-while getopts "c:dth" opt; do
+while getopts "c:dsth" opt; do
   case "${opt}" in
   c)
     PIMOD_CACHE="${OPTARG}"
     ;;
   d)
     PIMOD_DEBUG=1
+    ;;
+  s)
     ;;
   t)
     set -x

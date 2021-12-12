@@ -9,6 +9,12 @@ PUMP() {
 
   echo -e "\033[0;32m### PUMP ${1}\033[0m"
 
+  local input_hash="$(cache_mk_hash "${DEST_IMG}" "${*}")"
+  if cache_img_chk_load "${input_hash}" "${DEST_IMG}"; then
+    echo "Using cached image..";
+    return
+  fi
+
   BS="1M"
 
   # units does not print to stderr, thus test call before using output
@@ -41,4 +47,6 @@ PUMP() {
   resize2fs "/dev/mapper/${loop}p${IMG_ROOT}"
 
   umount_image "${loop}"
+
+  cache_img_checkpoint "${input_hash}" "${DEST_IMG}"
 }

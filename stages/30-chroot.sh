@@ -11,6 +11,12 @@ pre_stage() {
 # Usage: INSTALL [MODE] SOURCE DEST
 INSTALL() {
   echo -e "\033[0;32m### INSTALL $*\033[0m"
+
+  local input_hash="$(cache_mk_hash "${DEST_IMG}" "${*}")"
+  if cache_img_chk_load "${input_hash}" "${DEST_IMG}"; then
+    echo "Using cached image..";
+    return
+  fi
   
   local src=""
   local dst=""
@@ -41,6 +47,8 @@ INSTALL() {
   if [[ "$#" -eq "3" ]]; then
     chmod "$1" "${CHROOT_MOUNT}/${dst}"
   fi
+
+  cache_img_checkpoint "${input_hash}" "${DEST_IMG}"
 }
 
 # PATH adds the given path to an overlaying PATH variable, used within the RUN
@@ -103,11 +111,19 @@ ENV() {
 RUN() {
   echo -e "\033[0;32m### RUN ${*}\033[0m"
 
+  local input_hash="$(cache_mk_hash "${DEST_IMG}" "${*}")"
+  if cache_img_chk_load "${input_hash}" "${DEST_IMG}"; then
+    echo "Using cached image..";
+    return
+  fi
+
   local cmd_esceval="$(esceval "$@")"
   local cmd_env_subst="$(env_vars_subst "$cmd_esceval")"
 
   PATH=${GUEST_PATH} chroot "${CHROOT_MOUNT}" \
     /bin/sh -c "cd ${WORKDIR_PATH}; $(env_vars_export_cmd) ${cmd_env_subst}"
+
+  cache_img_checkpoint "${input_hash}" "${DEST_IMG}"
 }
 
 # HOST executed a command on the local host and can be used to prepare files, 
