@@ -47,7 +47,7 @@ INSTALL() {
 #
 # Usage: EXTRACT SOURCE DEST
 EXTRACT() {
-  echo -e "\033[0;32m### INSTALL $*\033[0m"
+  echo -e "\033[0;32m### EXTRACT $*\033[0m"
   
   local src="${CHROOT_MOUNT}/$1"
   local dst=$2
