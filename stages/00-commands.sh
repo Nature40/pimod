@@ -49,6 +49,10 @@ INSTALL() {
   :
 }
 
+EXTRACT() {
+  :
+}
+
 PATH() {
   :
 }
