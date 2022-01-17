@@ -52,12 +52,10 @@ EXTRACT() {
   local src="${CHROOT_MOUNT}/$1"
   local dst=$2
 
-  if [[ -e "${src}" ]]; then
-    if [[ -d "${src}" ]]; then
-      cp -r -T -P --preserve=mode "${src}" "${dst}"
-    else
-      cp -r -P --preserve=mode "${src}" "${dst}"
-    fi
+  if [[ -d "${src}" ]]; then
+    cp -r -T -P --preserve=mode "${src}" "${dst}"
+  elif [[ -e "${src}" ]]; then
+    cp -r -P --preserve=mode "${src}" "${dst}"
   fi
 }
 
