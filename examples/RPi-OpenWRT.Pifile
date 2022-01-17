@@ -23,6 +23,10 @@ INSTALL "README.md" "/tmp/"
 WORKDIR /tmp
 RUN head -n1 "README.md"
 
+# test if EXTRACT works
+RUN sh -c 'echo "hello from within the guest" > /tmp/hello'
+EXTRACT "/tmp/hello" "./hello"
+
 # test an INCLUDE - both with and without the .Pifile extension
 INCLUDE examples/Module-Hello.Pifile
 INCLUDE examples/Module-Hello
