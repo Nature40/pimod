@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    The title should be `${VERSION} - ${YYYY-MM-DD}` and the description should contain the section from this `CHANGELOG.md`.
 
 ## [Unreleased]
+
+## [0.5.0] - 2022-01-17
 ### Added
 - New `ENV` command for environment variables.
 - New `EXTRACT` command to copy files back to the host; @sensslen.
@@ -92,7 +94,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release of a working version of pimod.
 
-[Unreleased]: https://github.com/Nature40/pimod/compare/v0.4.4...HEAD
+[Unreleased]: https://github.com/Nature40/pimod/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/Nature40/pimod/compare/v0.4.4...v0.5.0
 [0.4.4]: https://github.com/Nature40/pimod/compare/v0.4.3...v0.4.4
 [0.4.3]: https://github.com/Nature40/pimod/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/Nature40/pimod/compare/v0.4.1...v0.4.2
