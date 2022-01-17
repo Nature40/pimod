@@ -16,20 +16,20 @@ INSTALL() {
   local dst=""
 
   case "$#" in
-  "2")
-    src="$1"
-    dst="$2"
-    ;;
+    "2")
+      src="$1"
+      dst="$2"
+      ;;
 
-  "3")
-    src="$2"
-    dst="$3"
-    ;;
+    "3")
+      src="$2"
+      dst="$3"
+      ;;
 
-  *)
-    echo -e "\033[0;31m### Error: INSTALL [MODE] SOURCE DEST\033[0m"
-    return 1
-    ;;
+    *)
+      echo -e "\033[0;31m### Error: INSTALL [MODE] SOURCE DEST\033[0m"
+      return 1
+      ;;
   esac
 
   if [[ -d "${src}" ]]; then
@@ -91,21 +91,21 @@ ENV() {
   local value=""
 
   case "$#" in
-  "1")
-    key="$1"
-    env_vars_del "$key"
-    ;;
+    "1")
+      key="$1"
+      env_vars_del "$key"
+      ;;
 
-  "2")
-    key="$1"
-    value="$2"
-    env_vars_set "$key" "$value"
-    ;;
+    "2")
+      key="$1"
+      value="$2"
+      env_vars_set "$key" "$value"
+      ;;
 
-  *)
-    echo -e "\033[0;31m### Error: ENV KEY [VALUE]\033[0m"
-    return 1
-    ;;
+    *)
+      echo -e "\033[0;31m### Error: ENV KEY [VALUE]\033[0m"
+      return 1
+      ;;
   esac
 
   echo -e "\033[0;32m### ENV ${key}=${value}\033[0m"
@@ -125,7 +125,7 @@ RUN() {
   local cmd_env_subst="$(env_vars_subst "$cmd_esceval")"
 
   PATH=${GUEST_PATH} chroot "${CHROOT_MOUNT}" \
-  /bin/sh -c "cd ${WORKDIR_PATH}; $(env_vars_export_cmd) ${cmd_env_subst}"
+    /bin/sh -c "cd ${WORKDIR_PATH}; $(env_vars_export_cmd) ${cmd_env_subst}"
 }
 
 # HOST executed a command on the local host and can be used to prepare files,
