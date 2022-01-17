@@ -156,6 +156,9 @@ The included file _has_ to have a `.Pifile` extension which need not be specifie
 `INSTALL` installs a given file or directory into the destination in the image.
 The optionally permission mode (*chmod*) can be set as the first parameter.
 
+#### `EXTRACT SOURCE DEST`
+`EXTRACT` copies a given file or directory from the image to the destination.
+
 #### `PATH /my/guest/path`
 `PATH` adds the given path to an overlaying PATH variable, used within the `RUN` command.
 

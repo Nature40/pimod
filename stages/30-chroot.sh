@@ -43,6 +43,22 @@ INSTALL() {
   fi
 }
 
+# EXTRACT copies a given file or directory from the image to the destination. 
+#
+# Usage: EXTRACT SOURCE DEST
+EXTRACT() {
+  echo -e "\033[0;32m### EXTRACT $*\033[0m"
+  
+  local src="${CHROOT_MOUNT}/$1"
+  local dst=$2
+
+  if [[ -d "${src}" ]]; then
+    cp -r -T -P --preserve=mode "${src}" "${dst}"
+  else
+    cp -r -P --preserve=mode "${src}" "${dst}"
+  fi
+}
+
 # PATH adds the given path to an overlaying PATH variable, used within the RUN
 # command.
 #
