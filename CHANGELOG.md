@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - New `ENV` command for environment variables.
+- New `EXTRACT` command to copy files back to the host; @sensslen.
 
 ## [0.4.4] - 2021-11-09
 ### Added
