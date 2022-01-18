@@ -3,11 +3,7 @@
 resolv_conf_setup() {
   local resolv_conf="${CHROOT_MOUNT}/etc/resolv.conf"
 
-  if [[ -f "${resolv_conf}" ]] && [[ -s "${resolv_conf}" ]]; then
-    return
-  fi
-
-  if [[ -L "${resolv_conf}" ]]; then
+  if [[ -f "${resolv_conf}" ]] || [[ -L "${resolv_conf}" ]]; then
     RESOLV_CONF_BACKUP=$(mktemp -u)
     mv "${resolv_conf}" "${RESOLV_CONF_BACKUP}"
   fi
