@@ -4,7 +4,7 @@ resolv_conf_setup() {
   local resolv_conf="${CHROOT_MOUNT}/etc/resolv.conf"
 
   if [[ -f "${resolv_conf}" ]] || [[ -L "${resolv_conf}" ]]; then
-    RESOLV_CONF_BACKUP=$(mktemp -u)
+    RESOLV_CONF_BACKUP="${CHROOT_MOUNT}/etc/resolv.conf.backup"
     mv "${resolv_conf}" "${RESOLV_CONF_BACKUP}"
   fi
 

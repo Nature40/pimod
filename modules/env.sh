@@ -1,5 +1,6 @@
 # ENV_VARS is an associative array of environment variables, set via ENV.
 declare -A ENV_VARS=()
+ENV_VARS["PIMOD"]="true"
 
 # env_vars_set saves an environment variable mapping.
 # Usage: env_vars_set KEY VALUE
