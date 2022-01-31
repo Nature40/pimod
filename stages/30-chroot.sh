@@ -11,7 +11,7 @@ pre_stage() {
 # Usage: INSTALL [MODE] SOURCE DEST
 INSTALL() {
   echo -e "\033[0;32m### INSTALL $*\033[0m"
-  
+
   local src=""
   local dst=""
 
@@ -43,12 +43,12 @@ INSTALL() {
   fi
 }
 
-# EXTRACT copies a given file or directory from the image to the destination. 
+# EXTRACT copies a given file or directory from the image to the destination.
 #
 # Usage: EXTRACT SOURCE DEST
 EXTRACT() {
   echo -e "\033[0;32m### EXTRACT $*\033[0m"
-  
+
   local src="${CHROOT_MOUNT}/$1"
   local dst=$2
 
@@ -126,7 +126,7 @@ RUN() {
     /bin/sh -c "cd ${WORKDIR_PATH}; $(env_vars_export_cmd) ${cmd_env_subst}"
 }
 
-# HOST executed a command on the local host and can be used to prepare files, 
+# HOST executed a command on the local host and can be used to prepare files,
 # cross-compile software, etc.
 #
 # Usage: HOST CMD PARAMS...

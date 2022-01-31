@@ -1,4 +1,4 @@
-if [ -z "${PIMOD_CACHE+x}" ]; then 
+if [ -z "${PIMOD_CACHE+x}" ]; then
   PIMOD_CACHE="/var/cache/pimod"
 fi
 
@@ -29,7 +29,7 @@ from_remote_fetch() {
   local url
   local url_path
   local download_path
-  
+
   url="${1}"
   url_path=$(echo "${url}" | sed 's/.*:\/\///')
   download_path="${PIMOD_CACHE}/${url_path}"

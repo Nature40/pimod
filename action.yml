@@ -1,7 +1,7 @@
 name: 'Run PIMOD'
 description: 'Reconfigure Raspberry Pi images with an easy, Docker-like configuration file'
 branding:
-  icon: 'archive'  
+  icon: 'archive'
   color: 'red'
 
 inputs:
@@ -11,7 +11,7 @@ inputs:
     default: 'Pifile'
 runs:
   using: "composite"
-  steps: 
+  steps:
     - run: sudo apt-get update
       shell: bash
     - run: sudo apt-get install -y binfmt-support fdisk file kpartx qemu qemu-user-static unzip p7zip-full wget xz-utils units
