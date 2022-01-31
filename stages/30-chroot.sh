@@ -132,5 +132,9 @@ RUN() {
 # Usage: HOST CMD PARAMS...
 HOST() {
   echo -e "\033[0;32m### HOST ${*}\033[0m"
-  "${@}"
+
+  local cmd_esceval="$(esceval "$@")"
+  local cmd_env_subst="$(env_vars_subst "$cmd_esceval")"
+
+  /bin/sh -c "$(env_vars_export_cmd) ${cmd_env_subst}"
 }

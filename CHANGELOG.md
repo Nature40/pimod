@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    The title should be `${VERSION} - ${YYYY-MM-DD}` and the description should contain the section from this `CHANGELOG.md`.
 
 ## [Unreleased]
+### Fixed
+- Apply `ENV` variables also to `HOST` commands.
 
 ## [0.5.0] - 2022-01-17
 ### Added
