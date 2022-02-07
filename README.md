@@ -199,14 +199,14 @@ RUN bash -c 'hexdump /dev/urandom | head'
 Because the *Pifile* is just a Bash script, some ~~dirty~~ brilliant hacks and extensions are possible.
 
 #### Bulk execution
-Here documents can be used with the `RUN` command.
+Sub-shells can be used with the `RUN` command.
 
 ```bash
-RUN <<EOF
+RUN sh -c '
 apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
 apt-get install -y sl
-EOF
+'
 ```
 
 #### Inplace Files
