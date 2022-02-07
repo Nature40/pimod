@@ -26,9 +26,13 @@ Options:
   -c --cache DEST   Define cache location.
   -d --debug        Debug on failure; run an interactive shell before tear down.
   -h --help         Print this help message.
+     --host-resolv  Always uses the host's /etc/resolv.conf file.
+                    Be aware, that when run within Docker this might be Docker's
+                    resolv.conf file.
   -t --trace        Trace each executed command for debugging.
 EOF
 }
+
 
 main() {
   local pifile
@@ -50,6 +54,11 @@ main() {
       -h|--help)
         show_help
         exit 0
+        ;;
+
+      --host-resolv)
+        # PIMOD_HOST_RESOLV is defined in modules/resolv_conf.sh
+        PIMOD_HOST_RESOLV=1
         ;;
 
       -t|--trace)

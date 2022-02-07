@@ -1,10 +1,14 @@
+if [ -z "${PIMOD_HOST_RESOLV+x}" ]; then
+  PIMOD_HOST_RESOLV=0
+fi
+
 # resolv_conf_setup checks the /etc/resolv.conf file within an image and remaps
 # it, if necessary.
 resolv_conf_setup() {
   local resolv_conf="${CHROOT_MOUNT}/etc/resolv.conf"
 
-  if [[ -f "${resolv_conf}" ]] && [[ -s "${resolv_conf}" ]]; then
-    return
+  if [[ -f "${resolv_conf}" ]] || (RUN test -e "/etc/resolv.conf"); then
+    [[ "${PIMOD_HOST_RESOLV}" -eq "0" ]] && return
   fi
 
   if [[ -L "${resolv_conf}" ]]; then

@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    The title should be `${VERSION} - ${YYYY-MM-DD}` and the description should contain the section from this `CHANGELOG.md`.
 
 ## [Unreleased]
+### Added
+- New --host-resolv flag to enforce using the host's /etc/resolv.conf.
+
 ### Fixed
 - Apply `ENV` variables also to `HOST` commands.
 

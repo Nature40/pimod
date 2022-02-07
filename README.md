@@ -39,10 +39,13 @@ pimod pimod.sh -h
 Usage: pimod.sh [Options] Pifile
 
 Options:
-  -c cache  Define cache location.
-  -d        Debug on failure; run an interactive shell before tear down
-  -t        Trace each executed command for debugging.
-  -h        Print this help message.
+  -c --cache DEST   Define cache location.
+  -d --debug        Debug on failure; run an interactive shell before tear down.
+  -h --help         Print this help message.
+     --host-resolv  Always uses the host's /etc/resolv.conf file.
+                    Be aware, that when run within Docker this might be Docker's
+                    resolv.conf file.
+  -t --trace        Trace each executed command for debugging.
 ```
 
 ### Debian
