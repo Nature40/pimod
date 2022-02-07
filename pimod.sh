@@ -23,40 +23,58 @@ show_help() {
 Usage: ${0} [Options] Pifile
 
 Options:
-  -c cache  Define cache location.
-  -d        Debug on failure; run an interactive shell before tear down
-  -t        Trace each executed command for debugging.
-  -h        Print this help message.
+  -c --cache DEST   Define cache location.
+  -d --debug        Debug on failure; run an interactive shell before tear down.
+  -h --help         Print this help message.
+  -t --trace        Trace each executed command for debugging.
 EOF
 }
 
-while getopts "c:dth" opt; do
-  case "${opt}" in
-  c)
-    PIMOD_CACHE="${OPTARG}"
-    ;;
-  d)
-    PIMOD_DEBUG=1
-    ;;
-  t)
-    set -x
-    ;;
-  h)
-    show_help
-    exit 0
-    ;;
-  *)
+main() {
+  local pifile
+
+  while :; do
+    case "$1" in
+      -c|--cache)
+        [[ "$#" -le "2" ]] && (echo "Usage: $0 --cache DEST"; exit 1)
+        # PIMOD_CACHE is defined in modules/from_remote.sh
+        PIMOD_CACHE="$2"
+        shift
+        ;;
+
+      -d|--debug)
+        # PIMOD_DEBUG is defined in modules/error.sh
+        PIMOD_DEBUG=1
+        ;;
+
+      -h|--help)
+        show_help
+        exit 0
+        ;;
+
+      -t|--trace)
+        set -x
+        ;;
+
+      -?*)
+        show_help
+        exit 1
+        ;;
+
+      *)
+        pifile="$1"
+        break
+    esac
+
+    shift
+  done
+
+  if [[ -z "$pifile" ]]; then
     show_help
     exit 1
-    ;;
-  esac
-done
+  fi
 
-PIFILE=${*:$OPTIND:1}
+  execute_pifile "$pifile"
+}
 
-if [[ -z "${PIFILE}" ]]; then
-  show_help
-  exit 1
-fi
-
-execute_pifile "${PIFILE}"
+main "$@"
