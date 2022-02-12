@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- New --host-resolv flag to enforce using the host's /etc/resolv.conf.
+- New -r/--resolv flag to select which /etc/resolv.conf to use.
 
 ### Fixed
 - Apply `ENV` variables also to `HOST` commands.

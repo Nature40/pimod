@@ -39,12 +39,19 @@ pimod pimod.sh -h
 Usage: pimod.sh [Options] Pifile
 
 Options:
+Options:
   -c --cache DEST   Define cache location.
   -d --debug        Debug on failure; run an interactive shell before tear down.
   -h --help         Print this help message.
-     --host-resolv  Always uses the host's /etc/resolv.conf file.
-                    Be aware, that when run within Docker this might be Docker's
-                    resolv.conf file.
+  -r --resolv TYPE  Specify which /etc/resolv.conf file to use for networking.
+                    By default, TYPE "auto" is used, which prefers an already
+                    existing resolv.conf, only to be replaced by the host's if
+                    missing.
+                    TYPE "guest" never mounts the host's file within the guest,
+                    even when such a file is absent within the image.
+                    TYPE "host" always uses the host's file within the guest.
+                    Be aware that when run within Docker, the host's file might
+                    be Docker's resolv.conf file.
   -t --trace        Trace each executed command for debugging.
 ```
 

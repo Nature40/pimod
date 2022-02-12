@@ -26,13 +26,18 @@ Options:
   -c --cache DEST   Define cache location.
   -d --debug        Debug on failure; run an interactive shell before tear down.
   -h --help         Print this help message.
-     --host-resolv  Always uses the host's /etc/resolv.conf file.
-                    Be aware, that when run within Docker this might be Docker's
-                    resolv.conf file.
+  -r --resolv TYPE  Specify which /etc/resolv.conf file to use for networking.
+                    By default, TYPE "auto" is used, which prefers an already
+                    existing resolv.conf, only to be replaced by the host's if
+                    missing.
+                    TYPE "guest" never mounts the host's file within the guest,
+                    even when such a file is absent within the image.
+                    TYPE "host" always uses the host's file within the guest.
+                    Be aware that when run within Docker, the host's file might
+                    be Docker's resolv.conf file.
   -t --trace        Trace each executed command for debugging.
 EOF
 }
-
 
 main() {
   local pifile
@@ -56,9 +61,19 @@ main() {
         exit 0
         ;;
 
-      --host-resolv)
-        # PIMOD_HOST_RESOLV is defined in modules/resolv_conf.sh
-        PIMOD_HOST_RESOLV=1
+      -r|--resolv)
+        [[ "$#" -le "2" ]] && (echo "Usage: $0 --resolv KIND"; exit 1)
+        case "$2" in
+          auto|guest|host)
+            # PIMOD_HOST_RESOLV_TYPE is defined in modules/resolv_conf.sh
+            PIMOD_HOST_RESOLV_TYPE="$2"
+            ;;
+
+          *)
+            echo "Usage: $0 --resolv KIND"
+            exit 1
+        esac
+        shift
         ;;
 
       -t|--trace)
