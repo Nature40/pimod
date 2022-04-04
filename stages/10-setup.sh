@@ -51,7 +51,7 @@ FROM() {
   elif from_remote_valid "${1}"; then
     from_remote_fetch "${1}"
   else
-    echo -e "\033[0;31m### Error: ${1} is not a file, device or fetachable!\033[0m"
+    echo -e "\033[0;31m### Error: ${1} is not a file, device or fetchable!\033[0m"
     return 1
   fi
 
