@@ -6,7 +6,7 @@ PUMP 10M
 RUN grep "OpenWrt 18.06.5 r7897-9d401013fc" /etc/os-release
 
 # test size of the image
-RUN sh -c "df -P / | grep 266200"
+RUN sh -c 'df -P / | grep 266080'
 
 # test if opkg works
 RUN mkdir -p /var/lock/
