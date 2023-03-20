@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Building Docker images for linux/arm/v7.
+- Configure Renovate for automated updates.
 
 ## [0.6.0] - 2022-02-12
 ### Added
