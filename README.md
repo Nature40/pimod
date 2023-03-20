@@ -1,44 +1,44 @@
 # pimod
-[![tests](https://github.com/Nature40/pimod/workflows/tests/badge.svg?branch=master)](https://github.com/Nature40/pimod/actions?query=workflow%3Atests)
-[![shellcheck](https://github.com/Nature40/pimod/workflows/shellcheck/badge.svg?branch=master)](https://github.com/Nature40/pimod/actions?query=workflow%3Ashellcheck)
-[![Build and upload DockerHub image](https://github.com/Nature40/pimod/actions/workflows/dockerhub.yml/badge.svg)](https://github.com/Nature40/pimod/actions/workflows/dockerhub.yml)
+[![CI: Tests](https://github.com/Nature40/pimod/workflows/tests/badge.svg?branch=master)](https://github.com/Nature40/pimod/actions?query=workflow%3Atests)
+[![CI: Shellcheck](https://github.com/Nature40/pimod/workflows/shellcheck/badge.svg?branch=master)](https://github.com/Nature40/pimod/actions?query=workflow%3Ashellcheck)
+[![CI: Build and upload DockerHub image](https://github.com/Nature40/pimod/actions/workflows/dockerhub.yml/badge.svg)](https://github.com/Nature40/pimod/actions/workflows/dockerhub.yml)
+[![Docker Hub: Version](https://img.shields.io/docker/v/nature40/pimod?color=blue&label=Docker%20Hub&logo=docker&logoColor=lightgrey&sort=semver)](https://hub.docker.com/r/nature40/pimod/tags)
 
 Reconfigure Raspberry Pi images with an easy, Docker-like configuration file.
 
-
 ## About
-*pimod* overtakes a given Raspberry Pi image by mounting a copy and modifying this copy through QEMU chroot.
-Therefore one can execute Pi's ARM-code easily on its x86\_64 host.
+pimod overtakes a given Raspberry Pi image file by mounting a copy and modifying it within a QEMU chroot.
+This allows the execution of a Pi's ARM code on whatever target, e.g., a x86\_64 host.
+
+To ease the usability, a Docker-inspired recipe, called the Pifile, is used to instrument pimod.
 
 ```
-# Create a customized version of the Raspberry Pi OS Lite
+# Example Pifile to create a customized version of the Raspberry Pi OS Lite
 
-FROM 2020-05-27-raspios-buster.img
-TO raspbian-buster-upgraded.img
+# Based on a remote image, which will be cached locally, create the altered raspi_example.img file
+FROM https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-02-22/2023-02-21-raspios-bullseye-arm64-lite.img.xz
+TO rapsi_example.img
 
 # Increase the image by 100 MB
 PUMP 100M
 
-# Enable serial console using built-in configuration tool
-RUN raspi-config nonint do_serial 0
-
-# Upgrade the operating system image
-RUN apt-get update
-RUN bash -c 'DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade'
-
 # Install an ssh key from local sources
+RUN mkdir -p /home/pi/.ssh
 INSTALL id_rsa.pub /home/pi/.ssh/authorized_keys
+
+# Enable the serial console and SSH
+RUN raspi-config nonint do_serial 0
+RUN raspi-config nonint do_ssh 0
+
+# Install the important cowsay util
+RUN apt-get update
+RUN apt-get install -y cowsay
 ```
-
-For detailed information [read our paper](https://jonashoechst.de/assets/papers/hoechst2020pimod.pdf).
-
 
 ## Installation, Usage
 ```
-pimod pimod.sh -h
 Usage: pimod.sh [Options] Pifile
 
-Options:
 Options:
   -c --cache DEST   Define cache location.
   -d --debug        Debug on failure; run an interactive shell before tear down.
@@ -55,35 +55,58 @@ Options:
   -t --trace        Trace each executed command for debugging.
 ```
 
+### Docker
+#### Getting or Building the Docker Image
+There are pre-built images available on [Docker Hub](https://hub.docker.com/r/nature40/pimod):
+
+```sh
+docker pull nature40/pimod
+```
+
+Alternatively, you can simply build the image yourself locally.
+This is essential for development, among other things:
+
+```sh
+git clone https://github.com/Nature40/pimod.git
+cd pimod
+docker build -t nature40/pimod .
+```
+
+#### Using the Docker Image
+Afterwards, the Docker image can either be used by `docker` or `docker compose`:
+
+```sh
+# Using Docker:
+docker run --rm --privileged -v $PWD:/pimod nature40/pimod pimod.sh examples/RPi-OpenWRT.Pifile
+
+# Using Docker Compose:
+docker compose run nature40/pimod pimod.sh examples/RPi-OpenWRT.Pifile
+```
+
 ### Debian
-```bash
-sudo apt-get install binfmt-support fdisk file kpartx lsof p7zip-full qemu qemu-user-static unzip wget xz-utils units
+Of course, Docker isn't really necessary and pimod can also be used on, e.g., a Debian directly:
+
+```sh
+sudo apt-get install \
+  binfmt-support \
+  fdisk \
+  file \
+  kpartx \
+  lsof \
+  p7zip-full \
+  qemu \
+  qemu-user-static \
+  unzip \
+  wget \
+  xz-utils \
+  units
 
 sudo ./pimod.sh Pifile
 ```
 
-### Docker
-```bash
-# build the docker container
-docker build -t pimod .
-
-# run the container privileged to allow loop device usage or…
-docker run --rm --privileged -v $PWD:/pimod pimod pimod.sh examples/RPi-OpenWRT.Pifile
-
-# …alternatively use docker-compose
-docker-compose run pimod pimod.sh examples/RPi-OpenWRT.Pifile
-
-# …alternatively use the latest image directly from dockerhub
-# the following commandline maps the current dir to /files
-docker run --rm --privileged \
-    -v $PWD:/files \
-    -e PATH=/pimod:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-    --workdir=/files \
-    nature40/pimod \
-    pimod.sh /files/RPi-OpenWRT.pifile
-```
-
 ### GitHub Actions
+Pimod can also be used as a GitHub Action and is available on the [marketplace](https://github.com/marketplace/actions/run-pimod).
+
 ```yml
 name: tests
 on: push
@@ -93,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
         with:
           submodules: recursive
       - name: Run pimod OpenWRT example
@@ -105,8 +128,17 @@ jobs:
 ## Pifile
 The Pifile contains commands to modify the image.
 
-However, the Pifile itself is just a Bash script and the commands are functions, which are loaded in different stages.
+Those commands are grouped in stages which pimod executes in their corresponding order.
 
+- First, all _setup stage_ commands are being executed to download the base image and configure the output.
+- The _prepare stage_ follows which pre-flight commands, e.g., resizing the output image.
+- The action happens in the _chroot stage_ where the QEMU chroot is built, commands are executed within, files are copied and so on.
+- Finally, the _postprocess stage_ might clean up some things.
+
+However, as the Pifile being just a Bash script by itself and the commands are functions, which are loaded in different stages, Bash scripting is possible within the Pifile to some extend.
+
+More internals are documented in our [our scientific paper](https://jonashoechst.de/assets/papers/hoechst2020pimod.pdf).
+If you stumble upon details there that you think belong in this README, feel free to create an issue or pull request.
 
 ### Example
 ```
@@ -121,7 +153,6 @@ RUN apt-get update
 RUN bash -c 'DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade'
 RUN apt-get install -y sl
 
-
 # The Upgrade.Pifile will create, called by the following command, a new
 # Upgrade.img image based on the given Raspbian image. This image's size is
 # increased about 100MB, has an enabled UART/serial output, the latest software
@@ -132,16 +163,24 @@ $ sudo ./pimod.sh Upgrade.Pifile
 $ dd if=Upgrade.img of=/dev/sdc bs=4M status=progress
 ```
 
+Further and more expressive examples are available in this repository's `./example` directory.
+Please take a look and feel free to submit your own examples if they are covering a current blind spot.
 
 ### Commands
-#### `FROM PATH_TO_IMAGE [PARTITION_NO]`, `FROM URL [PARTITION_NO]`
+#### Stage independent
+##### `INCLUDE PATH_TO_PIFILE`
+`INCLUDE` includes the provided Pifile in the current one for modularity and re-use.
+The included file _has_ to have a `.Pifile` extension which need not be specified.
+
+#### 1. Setup Stage
+##### `FROM PATH_TO_IMAGE [PARTITION_NO]`, `FROM URL [PARTITION_NO]`
 `FROM` sets the `SOURCE_IMG` variable to a target.
 This might be a local file or a remote URL, which will be downloaded.
 This file will become the base for the new image.
 
 By default, the Raspberry Pi's default partition number 2 will be used, but can be altered for other targets.
 
-#### `TO PATH_TO_IMAGE`
+##### `TO PATH_TO_IMAGE`
 `TO` sets the `DEST_IMG` variable to the given file.
 This file will contain the new image.
 Existing files will be overridden.
@@ -151,31 +190,29 @@ The part before this suffix will be the new `DEST_IMG`.
 
 If neither `TO` is called nor the Pifile indicates the output, `DEST_IMG` will default to *rpi.img* in the source file's directory.
 
-#### `INPLACE FROM_ARGS...`
+##### `INPLACE FROM_ARGS...`
 `INPLACE` does not create a copy of the image, but performs all further operations on the given image.
 This is an alternative to `FROM` and `TO`.
 
-#### `INCLUDE PATH_TO_PIFILE`
-`INCLUDE` includes the provided Pifile in the current one for modularity and re-use.
-The included file _has_ to have a `.Pifile` extension which need not be specified.
-
-#### `PUMP SIZE`
+#### 2. Prepare Stage
+##### `PUMP SIZE`
 `PUMP` increases the image's size about the given amount (suffixes K, M, G are allowed).
 
-#### `INSTALL <MODE> SOURCE DEST`
+#### 3. Chroot Stage
+##### `INSTALL <MODE> SOURCE DEST`
 `INSTALL` installs a given file or directory into the destination in the image.
 The optionally permission mode (*chmod*) can be set as the first parameter.
 
-#### `EXTRACT SOURCE DEST`
+##### `EXTRACT SOURCE DEST`
 `EXTRACT` copies a given file or directory from the image to the destination.
 
-#### `PATH /my/guest/path`
+##### `PATH /my/guest/path`
 `PATH` adds the given path to an overlaying PATH variable, used within the `RUN` command.
 
-#### `WORKDIR /my/guest/path`
+##### `WORKDIR /my/guest/path`
 `WORKDIR` sets the working directory within the image.
 
-#### `ENV KEY [VALUE]`
+##### `ENV KEY [VALUE]`
 `ENV` either sets or unsets an environment variable to be used within the image.
 If two parameters are given, the first is the key and the second the value.
 If one parameter is given, the environment variable will be removed.
@@ -191,7 +228,7 @@ RUN echo FOO = @@FOO@@        # FOO = BAR - substituted beforehand via pimod
 ENV FOO
 ```
 
-#### `RUN CMD [PARAMS...]`
+##### `RUN CMD [PARAMS...]`
 `RUN` executes a command in the chrooted image based on QEMU user emulation.
 
 Caveat: because the Pifile is just a Bash script, pipes do not work as one might suspect.
@@ -201,17 +238,16 @@ A possible workaround could be the usage of `bash -c`:
 RUN bash -c 'hexdump /dev/urandom | head'
 ```
 
-#### `HOST CMD [PARAMS...]`
+##### `HOST CMD [PARAMS...]`
 `HOST` executed a command on the local host and can be used to prepare files, cross-compile software, etc.
-
 
 ### Pifile Extensions
 Because the *Pifile* is just a Bash script, some ~~dirty~~ brilliant hacks and extensions are possible.
 
 #### Bulk execution
-Sub-shells can be used with the `RUN` command.
+Sub shells can be used with the `RUN` command.
 
-```bash
+```sh
 RUN sh -c '
 apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade

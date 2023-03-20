@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Building Docker images for linux/arm/v7.
 - Configure Renovate for automated updates.
 
+### Changed
+- Reworked the README to ease readability and understanding of pimod's internals.
+
 ## [0.6.0] - 2022-02-12
 ### Added
 - New -r/--resolv flag to select which /etc/resolv.conf to use.
