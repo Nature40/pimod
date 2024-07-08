@@ -16,9 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    The title should be `${VERSION} - ${YYYY-MM-DD}` and the description should contain the section from this `CHANGELOG.md`.
 
 ## [Unreleased]
+
+## [0.6.1] - 2024-07-08
 ### Added
 - Building Docker images for linux/arm/v7.
 - Configure Renovate for automated updates.
+- Installed git in docker container to support git-based versioning
 
 ### Changed
 - Reworked the README to ease readability and understanding of pimod's internals.
@@ -107,7 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release of a working version of pimod.
 
-[Unreleased]: https://github.com/Nature40/pimod/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/Nature40/pimod/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/Nature40/pimod/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/Nature40/pimod/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Nature40/pimod/compare/v0.4.4...v0.5.0
 [0.4.4]: https://github.com/Nature40/pimod/compare/v0.4.3...v0.4.4

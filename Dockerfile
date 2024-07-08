@@ -1,18 +1,20 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 LABEL description="Reconfigure Raspberry Pi images with an easy, Docker-like configuration file"
 LABEL maintainer="hoechst@mathematik.uni-marburg.de"
-LABEL version="0.6.0"
+LABEL version="0.6.1"
+
+RUN bash
 
 RUN apt-get update && \
   apt-get install -y \
   binfmt-support \
   fdisk \
   file \
+  git \
   kpartx \
   lsof \
   p7zip-full \
-  qemu \
   qemu-user-static \
   unzip \
   wget \
