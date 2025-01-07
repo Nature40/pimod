@@ -17,7 +17,7 @@ jobs:
           submodules: recursive
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y binfmt-support fdisk file git kpartx lsof p7zip-full qemu qemu-user-static unzip wget xz-utils units
+        run: sudo apt-get update && sudo apt-get install -y binfmt-support exfatprogs fdisk file git kpartx lsof p7zip-full qemu-user-static unzip wget xz-utils units
         shell: bash
 
       - name: Run pimod OpenWRT example

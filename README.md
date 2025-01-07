@@ -94,7 +94,6 @@ sudo apt-get install \
   kpartx \
   lsof \
   p7zip-full \
-  qemu \
   qemu-user-static \
   unzip \
   wget \
@@ -197,6 +196,9 @@ This is an alternative to `FROM` and `TO`.
 #### 2. Prepare Stage
 ##### `PUMP SIZE`
 `PUMP` increases the image's size about the given amount (suffixes K, M, G are allowed).
+
+##### `ADDPART SIZE PTYPE FS`
+`PUMP` appends a partition of the size (suffixes K, M, G are allowed) using a partion type and file system (ext4, exfat, ...).
 
 #### 3. Chroot Stage
 ##### `INSTALL <MODE> SOURCE DEST`

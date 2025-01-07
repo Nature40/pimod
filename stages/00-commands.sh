@@ -44,6 +44,10 @@ PUMP() {
   :
 }
 
+ADDPART() {
+  :
+}
+
 # Stage 3x
 INSTALL() {
   :

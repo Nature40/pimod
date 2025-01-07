@@ -2,13 +2,14 @@ FROM debian:bookworm-slim
 
 LABEL description="Reconfigure Raspberry Pi images with an easy, Docker-like configuration file"
 LABEL maintainer="hoechst@mathematik.uni-marburg.de"
-LABEL version="0.6.1"
+LABEL version="0.7.0"
 
 RUN bash
 
 RUN apt-get update && \
   apt-get install -y \
   binfmt-support \
+  exfatprogs \
   fdisk \
   file \
   git \
