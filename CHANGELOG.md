@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    The title should be `${VERSION} - ${YYYY-MM-DD}` and the description should contain the section from this `CHANGELOG.md`.
 
 ## [Unreleased]
+## [0.7.0] - 2025-01-07
+### Added
+- New `ADDPART` command to add partitions of a given size, partition type and file system to the image.
+
+### Changed
+- Updated CI badges.
+- Updated actions/checkout action to v5.
 
 ## [0.6.1] - 2024-07-08
 ### Added
@@ -111,6 +118,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release of a working version of pimod.
 
 [Unreleased]: https://github.com/Nature40/pimod/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/Nature40/pimod/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/Nature40/pimod/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/Nature40/pimod/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/Nature40/pimod/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Nature40/pimod/compare/v0.4.4...v0.5.0
