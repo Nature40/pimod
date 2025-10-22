@@ -243,6 +243,12 @@ RUN bash -c 'hexdump /dev/urandom | head'
 ##### `HOST CMD [PARAMS...]`
 `HOST` executed a command on the local host and can be used to prepare files, cross-compile software, etc.
 
+#### 4. Postprocess Stage
+##### `ZERO`
+`ZERO` fills unused space in the filesystem with zeros.
+This allows for better compression of the resulting image, resulting in smaller image files.
+Useful when creating images for distribution.
+
 ### Pifile Extensions
 Because the *Pifile* is just a Bash script, some ~~dirty~~ brilliant hacks and extensions are possible.
 

@@ -21,6 +21,15 @@ chroot_setup() {
       echo -e "\033[0;33m### Warning: Mounting image partitions using /etc/fstab failed.\033[0m"
 }
 
+# zero_fill fills the unused space in the filesystem with zeros
+# Usage: zero_fill
+zero_fill() {
+  local zero_file="${CHROOT_MOUNT}/zero.fill"
+
+  dd if=/dev/zero of=${zero_file} bs=1M status=progress || true
+  rm ${zero_file}
+}
+
 # chroot_teardown unmounts the given image file, mounted with chroot_setup.
 # Usage: chroot_teardown PATH_TO_IMAGE
 chroot_teardown() {
