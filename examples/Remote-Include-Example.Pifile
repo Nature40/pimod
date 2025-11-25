@@ -1,0 +1,16 @@
+# Example demonstrating remote INCLUDE functionality
+# This example shows how to include Pifiles from remote URLs (e.g., GitHub)
+
+FROM https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-02-22/2023-02-21-raspios-bullseye-arm64-lite.img.xz
+TO remote-include-example.img
+
+PUMP 100M
+
+# Example of including a remote module from a GitHub repository
+INCLUDE https://raw.githubusercontent.com/aniongithub/pi-bootstrap/refs/heads/main/modules/hostname.Pifile
+
+# Basic setup
+RUN apt-get update
+RUN apt-get install -y cowsay
+
+RUN raspi-config nonint do_ssh 0

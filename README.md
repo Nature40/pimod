@@ -167,9 +167,20 @@ Please take a look and feel free to submit your own examples if they are coverin
 
 ### Commands
 #### Stage independent
-##### `INCLUDE PATH_TO_PIFILE`
+##### `INCLUDE PATH_TO_PIFILE`, `INCLUDE URL`
 `INCLUDE` includes the provided Pifile in the current one for modularity and re-use.
 The included file _has_ to have a `.Pifile` extension which need not be specified.
+
+`INCLUDE` can also accept URLs to remote Pifiles, such as raw GitHub URLs, allowing you to use public modules directly.
+Remote Pifiles are cached locally (see `--cache` option) and will be reused on subsequent runs.
+
+```
+# Include a local module
+INCLUDE modules/setup
+
+# Include a remote module from GitHub (omits Pifile extension)
+INCLUDE https://raw.githubusercontent.com/user/repo/main/modules/module
+```
 
 #### 1. Setup Stage
 ##### `FROM PATH_TO_IMAGE [PARTITION_NO]`, `FROM URL [PARTITION_NO]`
