@@ -249,6 +249,19 @@ RUN bash -c 'hexdump /dev/urandom | head'
 This allows for better compression of the resulting image, resulting in smaller image files.
 Useful when creating images for distribution.
 
+##### `SHRINK [SIZE]`
+`SHRINK` shrinks the image to its minimal possible size using [PiShrink](https://github.com/Drewsif/PiShrink).
+Optionally, you can specify a target size (suffixes K, M, G are allowed) - the image will be shrunk to minimum and then expanded to the specified size if needed.
+This is useful to reduce the final image size for distribution.
+
+Examples:
+```sh
+SHRINK          # Shrink to minimum possible size
+SHRINK 4G       # Shrink to minimum, then ensure image is 4GB
+```
+
+Note: PiShrink is automatically downloaded and cached on first use.
+
 ### Pifile Extensions
 Because the *Pifile* is just a Bash script, some ~~dirty~~ brilliant hacks and extensions are possible.
 

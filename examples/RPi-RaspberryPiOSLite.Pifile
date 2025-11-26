@@ -1,5 +1,6 @@
 FROM https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2025-12-04/2025-12-04-raspios-trixie-arm64-lite.img.xz
 
+# Pump extra space for installing packages
 PUMP 200M
 
 RUN apt-get update
@@ -26,3 +27,10 @@ HOST echo FOO = @@FOO@@
 ENV FOO
 RUN sh -c 'echo FOO = $FOO'
 RUN echo FOO = @@FOO@@
+
+# Fill unused space with zeros for better compression
+ZERO
+
+# Shrink the image to minimum size, reclaiming the unused 200M
+# Final image will be compact and ready for distribution
+SHRINK

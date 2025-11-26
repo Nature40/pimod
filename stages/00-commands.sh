@@ -80,3 +80,7 @@ HOST() {
 ZERO() {
   :
 }
+
+SHRINK() {
+  :
+}
