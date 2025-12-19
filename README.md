@@ -250,17 +250,23 @@ This allows for better compression of the resulting image, resulting in smaller 
 Useful when creating images for distribution.
 
 ##### `SHRINK [SIZE]`
-`SHRINK` shrinks the image to its minimal possible size using [PiShrink](https://github.com/Drewsif/PiShrink).
-Optionally, you can specify a target size (suffixes K, M, G are allowed) - the image will be shrunk to minimum and then expanded to the specified size if needed.
-This is useful to reduce the final image size for distribution.
+`SHRINK` reduces the image file size by shrinking the filesystem and partition.
+The operation performs a filesystem check, resizes the filesystem, updates the partition table, and truncates the image file.
+
+**Without SIZE parameter**: Shrinks to the minimum filesystem size plus a 5% safety buffer to prevent the filesystem from being 100% full.
+
+**With SIZE parameter**: Shrinks the image to the exact target size (suffixes K, M, G are allowed).
+The target size must be large enough to contain the minimum required filesystem size plus partition overhead.
+If the current image is already smaller than the target size, no action is taken.
 
 Examples:
 ```sh
-SHRINK          # Shrink to minimum possible size
-SHRINK 4G       # Shrink to minimum, then ensure image is 4GB
+SHRINK          # Shrink to minimum size + 5% buffer
+SHRINK 2G       # Shrink to exactly 2GB (if possible)
+SHRINK 500M     # Shrink to exactly 500MB (if possible)
 ```
 
-Note: PiShrink is automatically downloaded and cached on first use.
+Note: `SHRINK` cannot be used with block devices, only image files.
 
 ### Pifile Extensions
 Because the *Pifile* is just a Bash script, some ~~dirty~~ brilliant hacks and extensions are possible.
