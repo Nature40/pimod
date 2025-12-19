@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    The title should be `${VERSION} - ${YYYY-MM-DD}` and the description should contain the section from this `CHANGELOG.md`.
 
 ## [Unreleased]
+
+## [0.9.0] - 2025-12-19
 ### Added
 - New `SHRINK` command to optimize image size by shrinking the filesystem and partition.
   - Automatically shrinks to minimum size plus 5% safety buffer.
@@ -134,7 +136,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release of a working version of pimod.
 
-[Unreleased]: https://github.com/Nature40/pimod/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/Nature40/pimod/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/Nature40/pimod/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/Nature40/pimod/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/Nature40/pimod/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/Nature40/pimod/compare/v0.6.0...v0.6.1

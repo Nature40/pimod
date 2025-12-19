@@ -14,7 +14,7 @@ runs:
   steps:
     - run: sudo apt-get update
       shell: bash
-    - run: sudo apt-get install -y binfmt-support exfatprogs fdisk file git kpartx qemu-user-static unzip p7zip-full wget xz-utils units
+    - run: sudo apt-get install -y binfmt-support exfatprogs fdisk file git kpartx qemu-user-static rsync unzip p7zip-full wget xz-utils units
       shell: bash
     - run: sudo ${{ github.action_path }}/pimod.sh ${{ inputs.pifile }}
       shell: bash
