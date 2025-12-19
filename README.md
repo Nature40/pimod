@@ -274,6 +274,83 @@ echo "Example output."
 EOF
 ```
 
+## pidiff
+
+`pidiff` is a tool that compares two disk images and generates an rsync batch file for incremental updates. This allows you to create update packages that can be applied to running systems without requiring a full image reflash.
+
+### Usage
+
+```
+Usage: pidiff.sh [OPTIONS] BASE_IMAGE UPDATED_IMAGE
+
+Compare two disk images and generate an rsync batch file for incremental updates.
+
+Arguments:
+  BASE_IMAGE      Path to the base image file
+  UPDATED_IMAGE   Path to the updated image file
+
+Options:
+  --partition=NUM       Rootfs partition number (default: 2)
+  --output=PATH         Output batch file path (default: auto-generated)
+  --tar                 Create tar archive containing batch and batch.sh files
+  --help                Print this help message
+  
+  Any other options are passed directly to rsync. For example:
+  --exclude-from=FILE   Pass --exclude-from to rsync
+  --verbose             Pass --verbose to rsync
+
+Examples:
+  pidiff.sh base.img updated.img
+  pidiff.sh --tar --output=update.batch base.img updated.img
+  pidiff.sh --itemize-changes --exclude="*.pyc" base.img updated.img
+```
+
+### How It Works
+
+1. **Mount Images**: `pidiff` mounts both the base and updated images, identifying the rootfs partition (default: partition 2).
+
+2. **Generate Batch File**: It uses `rsync --write-batch` to create an incremental update file that contains only the differences between the two images.
+
+3. **Inject Metadata**: The generated batch script includes metadata extracted from both images:
+   - Image paths and timestamps
+   - OS version information (`PRETTY_NAME`, `VERSION_ID`, `VERSION_COMMIT`)
+   - Rsync version and options used
+   - Creation timestamp
+
+4. **Safety Checks**: The generated batch script includes safety checks:
+   - Verifies root privileges
+   - Validates target directory exists
+   - Checks that the target system's OS version matches the base image version
+
+### Output Files
+
+By default, `pidiff` creates two files:
+- `*.batch`: The rsync batch file containing the incremental changes
+- `*.batch.sh`: An enhanced shell script that applies the update with safety checks
+
+With the `--tar` option, both files are bundled into a single tar archive.
+
+### Applying Updates
+
+To apply an update to a running system:
+
+```sh
+# Extract the archive (if using --tar)
+tar -xf update.batch.tar
+
+# Run the update script as root
+sudo ./update.batch.sh /path/to/target/rootfs
+```
+
+The script will verify the target system version matches the base image before applying changes.
+
+### Use Cases
+
+- **OTA Updates**: Create incremental update packages for remote systems
+- **Version Control**: Track changes between image versions
+- **Selective Updates**: Update only changed files without full reimaging
+- **Bandwidth Optimization**: Transfer only differences instead of full images
+
 ## Scientific Usage & Citation
 If you happen to use pimod in a scientific project, we would very much appreciate if you cited [our scientific paper](https://jonashoechst.de/assets/papers/hoechst2020pimod.pdf):
 
