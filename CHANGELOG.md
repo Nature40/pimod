@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    The title should be `${VERSION} - ${YYYY-MM-DD}` and the description should contain the section from this `CHANGELOG.md`.
 
 ## [Unreleased]
+### Added
+- New `SHRINK` command to optimize image size by shrinking the filesystem and partition.
+  - Automatically shrinks to minimum size plus 5% safety buffer.
+  - Optionally accepts target size parameter (e.g., `SHRINK 2G`) with K, M, G suffixes.
 
 ## [0.8.0] - 2025-10-22
 ### Added
