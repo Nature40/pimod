@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatically shrinks to minimum size plus 5% safety buffer.
   - Optionally accepts target size parameter (e.g., `SHRINK 2G`) with K, M, G suffixes.
 
+### Changed
+- Enhanced `INCLUDE` command to support remote Pifiles from URLs (e.g., GitHub) with automatic caching support.
+
 ## [0.8.0] - 2025-10-22
 ### Added
 - New `ZERO` command to fill unused filesystem space with zeros for better image compression.
