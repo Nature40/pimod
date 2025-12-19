@@ -18,6 +18,7 @@ RUN apt-get update && \
   lsof \
   p7zip-full \
   qemu-user-static \
+  rsync \
   unzip \
   wget \
   xz-utils \
