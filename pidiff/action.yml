@@ -1,0 +1,47 @@
+name: 'Run PIDIFF'
+description: 'Compare two disk images and generate an rsync batch file for incremental updates'
+branding:
+  icon: 'git-compare'
+  color: 'blue'
+
+inputs:
+  base_image:
+    description: 'Path to base image file'
+    required: true
+  updated_image:
+    description: 'Path to updated image file'
+    required: true
+  partition:
+    description: 'Rootfs partition number'
+    required: false
+    default: '2'
+  output:
+    description: 'Output batch file path'
+    required: false
+  tar:
+    description: 'Create tar archive containing batch and batch.sh files'
+    required: false
+    default: 'false'
+
+runs:
+  using: "composite"
+  steps:
+    - run: sudo apt-get update
+      shell: bash
+    - run: sudo apt-get install -y kpartx rsync
+      shell: bash
+    - name: Run pidiff
+      run: |
+        PIDIFF_ARGS=()
+        if [[ -n "${{ inputs.partition }}" ]]; then
+          PIDIFF_ARGS+=("--partition=${{ inputs.partition }}")
+        fi
+        if [[ -n "${{ inputs.output }}" ]]; then
+          PIDIFF_ARGS+=("--output=${{ inputs.output }}")
+        fi
+        if [[ "${{ inputs.tar }}" == "true" ]]; then
+          PIDIFF_ARGS+=("--tar")
+        fi
+        sudo ${{ github.action_path }}/../pidiff.sh "${PIDIFF_ARGS[@]}" "${{ inputs.base_image }}" "${{ inputs.updated_image }}"
+      shell: bash
+
