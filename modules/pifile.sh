@@ -31,7 +31,7 @@ execute_pifile() {
 
   bash -n "$1"
 
-  declare -a stages=( "10-setup" "20-prepare" "30-chroot" "40-postprocess" )
+  declare -a stages=( "10-setup" "20-prepare" "30-chroot" "40-postprocess" "50-finalize" )
   for stage in "${stages[@]}"; do
     pushd "$(dirname "$0")/modules" > /dev/null || exit 2
     . "../stages/00-commands.sh"
