@@ -22,6 +22,9 @@ inputs:
     description: 'Create tar archive containing batch and batch.sh files'
     required: false
     default: 'false'
+  rsync_options:
+    description: 'Additional rsync options to pass through (space-separated, e.g., "--verbose --exclude=*.pyc")'
+    required: false
 
 runs:
   using: "composite"
@@ -41,6 +44,13 @@ runs:
         fi
         if [[ "${{ inputs.tar }}" == "true" ]]; then
           PIDIFF_ARGS+=("--tar")
+        fi
+        if [[ -n "${{ inputs.rsync_options }}" ]]; then
+          # Split rsync_options by spaces and add each option to PIDIFF_ARGS
+          # This handles options like --verbose --exclude=*.pyc --exclude-from=file
+          # Note: For options with spaces or special characters, use YAML quotes
+          read -ra RSYNC_OPTS <<< "${{ inputs.rsync_options }}"
+          PIDIFF_ARGS+=("${RSYNC_OPTS[@]}")
         fi
         sudo ${{ github.action_path }}/../pidiff.sh "${PIDIFF_ARGS[@]}" "${{ inputs.base_image }}" "${{ inputs.updated_image }}"
       shell: bash
