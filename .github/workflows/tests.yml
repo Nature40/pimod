@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        image: [ "RPi-OpenWRT", "RPi-RaspberryPiOSLite" ]
+        image: [ "RPi-OpenWRT", "RPi-RaspberryPiOSLite", "Shrink", "Remote-Include-Example" ]
 
     steps:
       - name: Checkout repository
@@ -20,7 +20,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y binfmt-support exfatprogs fdisk file git kpartx lsof p7zip-full qemu-user-static unzip wget xz-utils units
         shell: bash
 
-      - name: Run pimod OpenWRT example
+      - name: Run pimod ${{ matrix.image }} example
         run: sudo ./pimod.sh examples/${{ matrix.image }}.Pifile
 
   test-action:

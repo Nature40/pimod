@@ -7,7 +7,7 @@ TO remote-include-example.img
 PUMP 100M
 
 # Example of including a remote module from a GitHub repository
-INCLUDE https://raw.githubusercontent.com/aniongithub/pi-bootstrap/refs/heads/main/modules/hostname.Pifile
+INCLUDE https://raw.githubusercontent.com/Nature40/pimod/refs/heads/master/examples/Module-Hello.Pifile
 
 # Basic setup
 RUN apt-get update
