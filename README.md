@@ -261,6 +261,7 @@ RUN bash -c 'hexdump /dev/urandom | head'
 This allows for better compression of the resulting image, resulting in smaller image files.
 Useful when creating images for distribution.
 
+#### 5. Finalize Stage
 ##### `SHRINK [SIZE]`
 `SHRINK` reduces the image file size by shrinking the filesystem and partition.
 The operation performs a filesystem check, resizes the filesystem, updates the partition table, and truncates the image file.

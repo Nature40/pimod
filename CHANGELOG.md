@@ -17,6 +17,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1] - 2024-12-22
+### Fixed
+- **Critical**: Fixed ext4 filesystem corruption in `SHRINK` command caused by resizing mounted filesystems.
+  - The filesystem is now properly unmounted before resize operations.
+  - Moved `SHRINK` to new stage 50-finalize that runs after chroot teardown for cleaner separation.
+
+### Changed
+- Improved code architecture by introducing stage 50-finalize for image-level operations.
+  - Stage 40-postprocess now only handles operations requiring active chroot (PUMP, ZERO).
+  - Stage 50-finalize handles operations on unmounted images (SHRINK).
+
 ## [0.9.0] - 2025-12-19
 ### Added
 - New `SHRINK` command to optimize image size by shrinking the filesystem and partition.
@@ -136,7 +147,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release of a working version of pimod.
 
-[Unreleased]: https://github.com/Nature40/pimod/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/Nature40/pimod/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/Nature40/pimod/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/Nature40/pimod/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/Nature40/pimod/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/Nature40/pimod/compare/v0.6.1...v0.7.0
