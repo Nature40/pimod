@@ -2,21 +2,26 @@
 
 set -euE
 
-pushd "$(dirname "$0")" > /dev/null
+# Resolve the script directory even when the script is symlinked
+SCRIPT_SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SCRIPT_SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SCRIPT_SOURCE")" >/dev/null && pwd)"
+  SCRIPT_SOURCE="$(readlink "$SCRIPT_SOURCE")"
+  [[ "$SCRIPT_SOURCE" != /* ]] && SCRIPT_SOURCE="$DIR/$SCRIPT_SOURCE"
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$SCRIPT_SOURCE")" >/dev/null && pwd)"
 
-. ./modules/chroot.sh
-. ./modules/env.sh
-. ./modules/error.sh
-. ./modules/esceval.sh
-. ./modules/from_remote.sh
-. ./modules/mount.sh
-. ./modules/path.sh
-. ./modules/pifile.sh
-. ./modules/qemu.sh
-. ./modules/resolv_conf.sh
-. ./modules/workdir.sh
-
-popd > /dev/null
+. "$SCRIPT_DIR/modules/chroot.sh"
+. "$SCRIPT_DIR/modules/env.sh"
+. "$SCRIPT_DIR/modules/error.sh"
+. "$SCRIPT_DIR/modules/esceval.sh"
+. "$SCRIPT_DIR/modules/from_remote.sh"
+. "$SCRIPT_DIR/modules/mount.sh"
+. "$SCRIPT_DIR/modules/path.sh"
+. "$SCRIPT_DIR/modules/pifile.sh"
+. "$SCRIPT_DIR/modules/qemu.sh"
+. "$SCRIPT_DIR/modules/resolv_conf.sh"
+. "$SCRIPT_DIR/modules/workdir.sh"
 
 show_help() {
   cat <<EOF

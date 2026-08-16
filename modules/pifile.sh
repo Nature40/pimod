@@ -31,17 +31,25 @@ execute_pifile() {
 
   bash -n "$1"
 
+  # Resolve absolute paths for modules and stages so pimod works when
+  # invoked via a symlink or from a different working directory.
+  MODULE_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
+  STAGES_DIR="${MODULE_DIR}/../stages"
+
+  # Absolute path to the provided Pifile.
+  PIFILE_ABS="$(cd -P "$(dirname "$1")" >/dev/null && pwd)/$(basename "$1")"
+
   declare -a stages=( "10-setup" "20-prepare" "30-chroot" "40-postprocess" "50-finalize" )
   for stage in "${stages[@]}"; do
-    pushd "$(dirname "$0")/modules" > /dev/null || exit 2
-    . "../stages/00-commands.sh"
-    . "../stages/${stage}.sh"
-    popd > /dev/null || exit 2
+    # shellcheck disable=SC1090
+    . "${STAGES_DIR}/00-commands.sh"
+    # shellcheck disable=SC1090
+    . "${STAGES_DIR}/${stage}.sh"
 
     pre_stage
 
     # shellcheck disable=SC1090
-    . "$1"
+    . "${PIFILE_ABS}"
 
     post_stage
   done
