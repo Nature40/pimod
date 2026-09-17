@@ -80,7 +80,7 @@ Afterwards, the Docker image can either be used by `docker` or `docker compose`:
 docker run --rm --privileged -v $PWD:/pimod nature40/pimod pimod.sh examples/RPi-OpenWRT.Pifile
 
 # Using Docker Compose:
-docker compose run nature40/pimod pimod.sh examples/RPi-OpenWRT.Pifile
+docker compose run pimod pimod.sh examples/RPi-OpenWRT.Pifile
 ```
 
 ### Debian
@@ -89,8 +89,10 @@ Of course, Docker isn't really necessary and pimod can also be used on, e.g., a 
 ```sh
 sudo apt-get install \
   binfmt-support \
+  exfatprogs \
   fdisk \
   file \
+  git \
   kpartx \
   lsof \
   p7zip-full \
@@ -116,11 +118,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           submodules: recursive
       - name: Run pimod OpenWRT example
-        uses: Natur40/pimod@master
+        uses: Nature40/pimod@HEAD
         with:
           pifile: examples/RPi-OpenWRT.Pifile
 ```
@@ -133,7 +135,8 @@ Those commands are grouped in stages which pimod executes in their corresponding
 - First, all _setup stage_ commands are being executed to download the base image and configure the output.
 - The _prepare stage_ follows which pre-flight commands, e.g., resizing the output image.
 - The action happens in the _chroot stage_ where the QEMU chroot is built, commands are executed within, files are copied and so on.
-- Finally, the _postprocess stage_ might clean up some things.
+- The _postprocess stage_ might clean up some things while the chroot is still active.
+- Finally, the _finalize stage_ runs after teardown for image-level operations such as `SHRINK`.
 
 However, as the Pifile being just a Bash script by itself and the commands are functions, which are loaded in different stages, Bash scripting is possible within the Pifile to some extend.
 
@@ -163,7 +166,7 @@ $ sudo ./pimod.sh Upgrade.Pifile
 $ dd if=Upgrade.img of=/dev/sdc bs=4M status=progress
 ```
 
-Further and more expressive examples are available in this repository's `./example` directory.
+Further and more expressive examples are available in this repository's `./examples` directory.
 Please take a look and feel free to submit your own examples if they are covering a current blind spot.
 
 ### Commands

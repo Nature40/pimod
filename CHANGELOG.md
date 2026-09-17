@@ -20,6 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `FROM` with a remote URL now supports compressed tarballs (`.tar.gz`, `.tar.xz`) and plain tarballs (`.tar`) in addition to bare compressed images.
   - Gzip/xz payloads are inspected after decompression: if the result is a tarball it is extracted, otherwise it is used directly as the image (preserving the previous behaviour for `.img.gz`/`.img.xz`).
 
+### Changed
+- Documented the finalize stage, host install packages, GitHub Action usage, and Docker Compose service name in the README.
+- Updated Docker Hub workflow to docker/setup-buildx-action v4, docker/build-push-action v7, and docker/metadata-action v6.
+- Switched Renovate preset from `config:base` to `config:recommended`.
+
 ## [0.9.1] - 2024-12-22
 ### Fixed
 - **Critical**: Fixed ext4 filesystem corruption in `SHRINK` command caused by resizing mounted filesystems.
