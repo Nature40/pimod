@@ -16,13 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    The title should be `${VERSION} - ${YYYY-MM-DD}` and the description should contain the section from this `CHANGELOG.md`.
 
 ## [Unreleased]
+
+## [0.9.2] - 2026-09-17
 ### Added
 - `FROM` with a remote URL now supports compressed tarballs (`.tar.gz`, `.tar.xz`) and plain tarballs (`.tar`) in addition to bare compressed images.
   - Gzip/xz payloads are inspected after decompression: if the result is a tarball it is extracted, otherwise it is used directly as the image (preserving the previous behaviour for `.img.gz`/`.img.xz`).
+- pidiff GitHub Action now accepts additional `rsync_options`.
 
 ### Changed
 - Documented the finalize stage, host install packages, GitHub Action usage, and Docker Compose service name in the README.
-- Updated Docker Hub workflow to docker/setup-buildx-action v4, docker/build-push-action v7, and docker/metadata-action v6.
+- Updated GitHub Actions: docker/setup-buildx-action v4, docker/build-push-action v7, docker/metadata-action v6, docker/login-action v4, docker/setup-qemu-action v4, and actions/checkout v7.
 - Switched Renovate preset from `config:base` to `config:recommended`.
 
 ### Fixed
@@ -160,7 +163,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release of a working version of pimod.
 
-[Unreleased]: https://github.com/Nature40/pimod/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/Nature40/pimod/compare/v0.9.2...HEAD
+[0.9.2]: https://github.com/Nature40/pimod/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/Nature40/pimod/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/Nature40/pimod/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/Nature40/pimod/compare/v0.7.0...v0.8.0
