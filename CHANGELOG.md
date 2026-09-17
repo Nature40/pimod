@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    The title should be `${VERSION} - ${YYYY-MM-DD}` and the description should contain the section from this `CHANGELOG.md`.
 
 ## [Unreleased]
+### Changed
+- Documented the finalize stage, host install packages, GitHub Action usage, and Docker Compose service name in the README.
+- Updated Docker Hub workflow to docker/setup-buildx-action v4, docker/build-push-action v7, and docker/metadata-action v6.
+- Switched Renovate preset from `config:base` to `config:recommended`.
 
 ## [0.9.1] - 2024-12-22
 ### Fixed
