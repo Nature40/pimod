@@ -1,4 +1,4 @@
-if [ -z "${PIMOD_HOST_RESOLV+x}" ]; then
+if [ -z "${PIMOD_HOST_RESOLV_TYPE+x}" ]; then
   PIMOD_HOST_RESOLV_TYPE="auto"
 fi
 
@@ -19,7 +19,24 @@ resolv_conf_setup() {
       ;;
 
     host)
-      # Always mount the host's file as an overlay.
+      # Always use the host's DNS configuration.
+      # When the host uses the systemd-resolved stub resolver, its
+      # /etc/resolv.conf only points at 127.0.0.53, which is not reachable
+      # from within the chroot. In that case copy the real upstream servers
+      # from /run/systemd/resolve/resolv.conf instead of bind mounting the
+      # stub file.
+      if grep -q "127.0.0.53" /etc/resolv.conf 2>/dev/null && [ -f /run/systemd/resolve/resolv.conf ]; then
+        # Back up the image's own resolv.conf so it can be restored on
+        # teardown, then drop in the host's resolved upstream servers.
+        if [[ -e "${resolv_conf}" || -L "${resolv_conf}" ]]; then
+          RESOLV_CONF_BACKUP=$(mktemp -u)
+          mv "${resolv_conf}" "${RESOLV_CONF_BACKUP}"
+        fi
+        cp /run/systemd/resolve/resolv.conf "${resolv_conf}"
+        RESOLV_CONF_COPIED=1
+        return
+      fi
+      # Otherwise fall through to the bind mount below.
       ;;
 
     *)
@@ -43,11 +60,15 @@ resolv_conf_setup() {
 
 # resolv_conf_teardown resets the actions done by resolv_conf_setup.
 resolv_conf_teardown() {
-  [[ -z ${RESOLVE_MOUNT+x} ]] && return
-
   local resolv_conf="${CHROOT_MOUNT}/etc/resolv.conf"
 
-  umount "${resolv_conf}"
+  if [[ -n ${RESOLVE_MOUNT+x} ]]; then
+    umount "${resolv_conf}"
+  elif [[ -n ${RESOLV_CONF_COPIED+x} ]]; then
+    rm -f "${resolv_conf}"
+  else
+    return 0
+  fi
 
   if [[ -n ${RESOLV_CONF_BACKUP+x} ]]; then
     mv "${RESOLV_CONF_BACKUP}" "${resolv_conf}"
