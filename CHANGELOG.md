@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Docker Hub workflow to docker/setup-buildx-action v4, docker/build-push-action v7, and docker/metadata-action v6.
 - Switched Renovate preset from `config:base` to `config:recommended`.
 
+### Fixed
+- `pimod.sh` now locates modules, stages, and the Pifile from the real script directory (`BASH_SOURCE`, following symlinks) instead of `$(dirname "$0")` and relative `pushd`.
+  - Invoking pimod through a symlink or from a working directory other than the repo root no longer fails to source those files.
+
 ## [0.9.1] - 2024-12-22
 ### Fixed
 - **Critical**: Fixed ext4 filesystem corruption in `SHRINK` command caused by resizing mounted filesystems.
