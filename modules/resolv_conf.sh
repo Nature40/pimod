@@ -1,4 +1,4 @@
-if [ -z "${PIMOD_HOST_RESOLV+x}" ]; then
+if [ -z "${PIMOD_HOST_RESOLV_TYPE+x}" ]; then
   PIMOD_HOST_RESOLV_TYPE="auto"
 fi
 

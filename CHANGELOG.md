@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Switched Renovate preset from `config:base` to `config:recommended`.
 
 ### Fixed
+- Default `--resolv` handling now checks `PIMOD_HOST_RESOLV_TYPE` instead of the unused `PIMOD_HOST_RESOLV`, so an env-set type is no longer overwritten back to `auto` when the module is sourced.
 - `pimod.sh` now locates modules, stages, and the Pifile from the real script directory (`BASH_SOURCE`, following symlinks) instead of `$(dirname "$0")` and relative `pushd`.
   - Invoking pimod through a symlink or from a working directory other than the repo root no longer fails to source those files.
 
