@@ -1,0 +1,72 @@
+name: VS Code extension
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - editors/vscode/**
+      - .github/workflows/vscode.yml
+  pull_request:
+    paths:
+      - editors/vscode/**
+      - .github/workflows/vscode.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Package extension
+        working-directory: editors/vscode
+        run: |
+          cp ../../LICENSE LICENSE
+          npx --yes @vscode/vsce@3.9.2 package \
+            --no-dependencies \
+            --githubBranch master \
+            --out pifile.vsix
+
+      - name: Upload VSIX
+        uses: actions/upload-artifact@v4
+        with:
+          name: pifile-vsix
+          path: editors/vscode/pifile.vsix
+          if-no-files-found: error
+
+  publish:
+    needs: package
+    if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download VSIX
+        uses: actions/download-artifact@v4
+        with:
+          name: pifile-vsix
+          path: dist
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Publish to the Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [ -z "$VSCE_PAT" ]; then
+            echo "Set the VSCE_PAT repository secret to a Marketplace personal access token for publisher nature40."
+            exit 1
+          fi
+          npx --yes @vscode/vsce@3.9.2 publish \
+            --packagePath dist/pifile.vsix \
+            --skip-duplicate
