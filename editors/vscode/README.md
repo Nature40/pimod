@@ -22,9 +22,11 @@ npx @vscode/vsce package
 
 Run that command from this directory. It writes a `.vsix` you can install with **Extensions: Install from VSIX...**.
 
-## Publishing
+Publish that package manually to the Visual Studio Marketplace under the `nature40` publisher:
 
-Pushes to `master` that change this directory package the extension and publish it to the Visual Studio Marketplace when `package.json` contains a version that is not already published. Publishing uses the `nature40` publisher and the `VSCE_PAT` repository secret, a [Marketplace personal access token](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token). The workflow publishes the built `.vsix` and does not create a git tag.
+```sh
+npx @vscode/vsce publish --no-git-tag-version
+```
 
 ## Credit
 

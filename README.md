@@ -311,7 +311,7 @@ EOF
 
 ## Editor support
 
-Visual Studio Code syntax highlighting for `.Pifile` files lives in [`editors/vscode`](editors/vscode). Open that folder and press F5 to try the extension, or package it with `npx @vscode/vsce package` from that directory. Pushes to `master` that change the extension publish a new Marketplace version when `VSCE_PAT` is set.
+Visual Studio Code syntax highlighting for `.Pifile` files lives in [`editors/vscode`](editors/vscode). Open that folder and press F5 to try the extension, or package it with `npx @vscode/vsce package` from that directory.
 
 ## pidiff
 
