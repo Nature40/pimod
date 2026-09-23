@@ -4,10 +4,11 @@ on: [push, pull_request]
 
 jobs:
   test-local:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
         image: [ "RPi-OpenWRT", "RPi-RaspberryPiOSLite", "Shrink", "Remote-Include-Example" ]
 
     steps:
@@ -17,7 +18,10 @@ jobs:
           submodules: recursive
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y binfmt-support exfatprogs fdisk file git kpartx lsof p7zip-full qemu-user-static unzip wget xz-utils units
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y binfmt-support exfatprogs fdisk file git kpartx lsof p7zip-full unzip wget xz-utils units
+          sudo apt-get install -y qemu-user-static || sudo apt-get install -y qemu-user-binfmt
         shell: bash
 
       - name: Run pimod ${{ matrix.image }} example
@@ -36,7 +40,11 @@ jobs:
           test -r "$img"
 
   test-action:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
 
     steps:
       - name: Checkout repository

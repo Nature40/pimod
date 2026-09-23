@@ -13,15 +13,23 @@ qemu_setup() {
     local qemu_path
     local bin_path
 
-    qemu_path=$(command -v "qemu-${arch}-static")
-    bin_path=$(dirname "${qemu_path}")
+    # Ubuntu 26 ships the static emulators as qemu-$arch. Earlier releases
+    # used qemu-$arch-static, which binfmt_misc still points at.
+    qemu_path=$(command -v "qemu-${arch}-static" || true)
+    if [[ -z "${qemu_path}" ]]; then
+      qemu_path=$(command -v "qemu-${arch}" || true)
+    fi
 
-    # recreate bin folders
-    mkdir -p "${CHROOT_MOUNT}/${bin_path}"
-    touch "${CHROOT_MOUNT}/${qemu_path}"
+    if [[ -n "${qemu_path}" ]]; then
+      bin_path=$(dirname "${qemu_path}")
 
-    mount -o ro,bind "${qemu_path}" "${CHROOT_MOUNT}/${qemu_path}"
-    QEMU_MOUNTS=("${QEMU_MOUNTS[@]}" "${CHROOT_MOUNT}/${qemu_path}")
+      # recreate bin folders
+      mkdir -p "${CHROOT_MOUNT}/${bin_path}"
+      touch "${CHROOT_MOUNT}/${qemu_path}"
+
+      mount -o ro,bind "${qemu_path}" "${CHROOT_MOUNT}/${qemu_path}"
+      QEMU_MOUNTS=("${QEMU_MOUNTS[@]}" "${CHROOT_MOUNT}/${qemu_path}")
+    fi
 
     # enable arch
     update-binfmts --enable "qemu-${arch}" || \
