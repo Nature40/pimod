@@ -1,3 +1,4 @@
 **/*.img
 .cache/
 CHANGELOG.md
+**/*.vsix

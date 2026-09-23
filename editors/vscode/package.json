@@ -1,0 +1,41 @@
+{
+  "name": "pifile",
+  "displayName": "Pifile",
+  "description": "Syntax and language support for Pifile files",
+  "keywords": [
+    "pifile",
+    "pimod",
+    "raspberry-pi",
+    "pi-image"
+  ],
+  "version": "0.1.0",
+  "license": "GPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nature40/pimod.git",
+    "directory": "editors/vscode"
+  },
+  "engines": {
+    "vscode": "^1.76.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "pifile",
+        "aliases": ["Pifile", "pifile"],
+        "extensions": [".Pifile"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "pifile",
+        "scopeName": "source.pifile",
+        "path": "./syntaxes/pifile.tmLanguage"
+      }
+    ]
+  }
+}

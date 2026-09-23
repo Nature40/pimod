@@ -309,6 +309,10 @@ echo "Example output."
 EOF
 ```
 
+## Editor support
+
+Visual Studio Code syntax highlighting for `.Pifile` files lives in [`editors/vscode`](editors/vscode). Open that folder and press F5 to try the extension, or package it with `npx @vscode/vsce package` from that directory.
+
 ## pidiff
 
 `pidiff` is a tool that compares two disk images and generates an rsync batch file for incremental updates. This allows you to create update packages that can be applied to running systems without requiring a full image reflash.
@@ -403,6 +407,7 @@ If you happen to use pimod in a scientific project, we would very much appreciat
 ```
 
 ## Notable Mentions
+- [vscode-pifile](https://github.com/disaac/vscode-pifile), the language extension this repository's editor support is based on
 - [Debian Wiki, qemu-user-static](https://wiki.debian.org/RaspberryPi/qemu-user-static)
 - [raspberry-pi-chroot-armv7-qemu.md](https://gist.github.com/jkullick/9b02c2061fbdf4a6c4e8a78f1312a689)
 - [chroot-to-pi.sh](https://gist.github.com/htruong/7df502fb60268eeee5bca21ef3e436eb)
