@@ -8,6 +8,16 @@ from_remote_valid() {
   [[ $1 =~ $schemeRegexp ]]
 }
 
+# apply_creation_mode sets a regular file to the mode a shell redirect would
+# have used under the current umask. mktemp creates 0600, and writing into
+# that existing file keeps 0600; mv and cp cannot add permission bits later.
+apply_creation_mode() {
+  local path="${1}"
+  local mask
+  mask=$(umask)
+  chmod "$(printf '%o' $((0666 & ~mask)))" "${path}"
+}
+
 # unarchive_image extracts files from an image and moves the largest to a given path.
 unarchive_image() {
   local archive="${1}"
@@ -110,6 +120,8 @@ from_remote_fetch() {
       return 1
       ;;
   esac
+
+  apply_creation_mode "${tmpfile}"
 
   export SOURCE_IMG="${tmpfile}"
   export SOURCE_IMG_TMP=1

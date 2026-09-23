@@ -23,6 +23,18 @@ jobs:
       - name: Run pimod ${{ matrix.image }} example
         run: sudo ./pimod.sh examples/${{ matrix.image }}.Pifile
 
+      - name: Output image is readable by the runner
+        run: |
+          pifile="examples/${{ matrix.image }}.Pifile"
+          img="${pifile%.Pifile}.img"
+          to=$(grep -E '^TO[[:space:]]+' "$pifile" | tail -n1 | awk '{print $2}')
+          if [[ -n "$to" ]]; then
+            img="$to"
+          fi
+          mode=$(stat -c %a "$img")
+          echo "${img} mode=${mode}"
+          test -r "$img"
+
   test-action:
     runs-on: ubuntu-latest
 

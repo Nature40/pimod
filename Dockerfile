@@ -2,7 +2,7 @@ FROM debian:trixie-slim
 
 LABEL description="Reconfigure Raspberry Pi images with an easy, Docker-like configuration file"
 LABEL maintainer="hoechst@trackit.systems"
-LABEL version="0.9.2"
+LABEL version="0.9.3"
 
 RUN bash
 
