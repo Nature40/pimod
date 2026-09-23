@@ -30,7 +30,6 @@ jobs:
       - name: Package extension
         working-directory: editors/vscode
         run: |
-          cp ../../LICENSE LICENSE
           npx --yes @vscode/vsce@3.9.2 package \
             --no-dependencies \
             --githubBranch master \
