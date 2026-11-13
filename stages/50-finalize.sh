@@ -1,3 +1,55 @@
+# shrink_partition_table sets the size of the given partition in the image's
+# partition table and truncates the image file to the end of its last
+# partition. For GPT, room for the backup partition table is kept at the end
+# of the file, and the table is rewritten so that its backup header and
+# last usable LBA match the new image size.
+#
+# Usage: shrink_partition_table IMAGE PARTITION_NO SIZE_IN_SECTORS
+shrink_partition_table() {
+  local img="${1}"
+  local part="${2}"
+  local newsize="${3}"
+
+  # Dump the table with the new partition size. last-lba is dropped, so sfdisk
+  # derives it from the truncated image size when writing a GPT.
+  local table
+  table=$(sfdisk -d "${img}" | awk -v part="${part}" -v newsize="${newsize}" '
+    /^last-lba:/ { next }
+    /^[^#]/ && /start= *[0-9]+, *size= *[0-9]+/ {
+      partcount++
+      if (partcount == part) gsub(/size= *[0-9]+/, "size=" newsize)
+    }
+    { print }
+  ')
+
+  # First sector after the last partition.
+  local end
+  end=$(awk '/start= *[0-9]+, *size= *[0-9]+/ {
+      match($0, /start= *[0-9]+/); s = substr($0, RSTART + 6, RLENGTH - 6) + 0
+      match($0, /size= *[0-9]+/);  z = substr($0, RSTART + 5, RLENGTH - 5) + 0
+      if (s + z > max) max = s + z
+    }
+    END { printf "%d\n", max }' <<< "${table}")
+
+  # The backup GPT consists of the partition entries (table-length entries of
+  # 128 bytes) followed by the backup header in the last sector.
+  local backup_sectors=0
+  if [[ "$(awk -F': *' '$1 == "label" { print $2 }' <<< "${table}")" == "gpt" ]]; then
+    local table_length
+    table_length=$(awk -F': *' '$1 == "table-length" { print $2 }' <<< "${table}")
+    backup_sectors=$(( 1 + (${table_length:-128} * 128 + 511) / 512 ))
+  fi
+
+  truncate -s $(( (end + backup_sectors) * 512 )) "${img}"
+
+  local err=0
+  printf '%s\n' "${table}" | sfdisk --no-reread --force "${img}" 2>&1 || err=$?
+  if [ "${err}" -ne 0 ]; then
+    echo -e "\033[0;31m### Error: sfdisk failed (${err}).\033[0m"
+    return 1
+  fi
+}
+
 # SHRINK reduces the image file size by shrinking the filesystem and partition.
 # Optionally, a size parameter can be provided to shrink to a specific size.
 #
@@ -125,26 +177,8 @@ SHRINK() {
   local newsize_sectors
   newsize_sectors=$(((target_blocks * blocksize + 511) / 512))
 
-  # Modify partition table: dump, update size field, restore
   echo "Shrinking partition to ${newsize_sectors} sectors"
-
-  err=0
-  sfdisk -d "${DEST_IMG}" | awk -v part="${IMG_ROOT}" -v newsize="${newsize_sectors}" '
-    /^[^#]/ && /start= *[0-9]+, *size= *[0-9]+/ {
-      partcount++
-      if (partcount == part) gsub(/size= *[0-9]+/, "size=" newsize)
-    }
-    { print }
-  ' | sfdisk --no-reread --force "${DEST_IMG}" 2>&1 || err=$?
-  if [ "${err}" -ne 0 ]; then
-    echo -e "\033[0;31m### Error: sfdisk failed (${err}).\033[0m"
-    return 13
-  fi
-
-  # Truncate image file to new partition end
-  local last_sector
-  last_sector=$(sfdisk -l "${DEST_IMG}" -o END -n 2>/dev/null | tail -n1 | tr -d ' ')
-  truncate -s $(((last_sector + 1) * 512)) "${DEST_IMG}"
+  shrink_partition_table "${DEST_IMG}" "${IMG_ROOT}" "${newsize_sectors}" || return 13
 
   local aftersize
   aftersize="$(ls -lh "${DEST_IMG}" | cut -d ' ' -f 5)"
