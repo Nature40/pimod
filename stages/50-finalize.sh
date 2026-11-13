@@ -63,7 +63,7 @@ SHRINK() {
   echo -e "\033[0;32m### SHRINK${1:+ ${1}}\033[0m"
 
   local beforesize
-  beforesize="$(ls -lh "${DEST_IMG}" | cut -d ' ' -f 5)"
+  beforesize="$(numfmt --to=iec "$(stat -c %s "${DEST_IMG}")")"
 
   # Mount image and check filesystem integrity
   local loop
@@ -181,7 +181,7 @@ SHRINK() {
   shrink_partition_table "${DEST_IMG}" "${IMG_ROOT}" "${newsize_sectors}" || return 13
 
   local aftersize
-  aftersize="$(ls -lh "${DEST_IMG}" | cut -d ' ' -f 5)"
+  aftersize="$(numfmt --to=iec "$(stat -c %s "${DEST_IMG}")")"
 
   echo -e "\033[0;32m### Shrunk ${DEST_IMG} from ${beforesize} to ${aftersize}\033[0m"
 }

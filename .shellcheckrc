@@ -1,0 +1,6 @@
+# The sourced modules and stages have no shebang; pimod requires bash.
+shell=bash
+
+# Sourced paths are computed at runtime and cannot be followed. Every script
+# is checked on its own instead, see .github/workflows/shellcheck.yml.
+disable=SC1090,SC1091

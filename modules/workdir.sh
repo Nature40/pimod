@@ -1,3 +1,4 @@
+# shellcheck disable=SC2034  # used in stages/30-chroot.sh
 # WORKDIR_PATH is the workdir to be used within the chroot.
 WORKDIR_PATH="/"
 

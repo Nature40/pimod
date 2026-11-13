@@ -15,7 +15,7 @@ PUMP() {
   echo -n "pump conversion to ${BS} * "
   units -t "${1}B" "${BS}B"
 
-  COUNT=$(units -t ${1}B ${BS}B)
+  COUNT=$(units -t "${1}B" "${BS}B")
 
   # Ceil the number if a decimal is given.
   if [[ "${COUNT}" == *.* ]]; then
@@ -66,7 +66,7 @@ ADDPART() {
   echo -n "addpart conversion to ${BS} * "
   units -t "${1}B" "${BS}B"
 
-  COUNT=$(units -t ${1}B ${BS}B)
+  COUNT=$(units -t "${1}B" "${BS}B")
 
   # Ceil the number if a decimal is given.
   if [[ "${COUNT}" == *.* ]]; then
@@ -84,7 +84,7 @@ ADDPART() {
 
   echo "checking mkfs.${3}"
 
-  if ! command -v mkfs.${3}; then
+  if ! command -v "mkfs.${3}"; then
     echo -e "\033[0;31m### Error: file system ${3} is not available.\033[0m"
     return 1
   fi
@@ -110,7 +110,7 @@ ADDPART() {
   local loop
   loop=$(mount_image "${DEST_IMG}")
 
-  mkfs.${3} "/dev/mapper/${loop}p${data_part_nr}"
+  "mkfs.${3}" "/dev/mapper/${loop}p${data_part_nr}"
 
   umount_image "${loop}"
 }

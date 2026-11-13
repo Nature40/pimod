@@ -66,6 +66,7 @@ detach "${dev}"
 
 # The output name contains a space and a command substitution, which the
 # generated batch script must treat as a plain file name.
+# shellcheck disable=SC2016  # the command substitution must stay literal
 update='update $(touch injected)'
 "${pidiff}" --exclude='*.pyc' --output="${update}" base.img updated.img
 

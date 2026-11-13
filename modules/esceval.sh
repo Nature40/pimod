@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: 0BSD
 # Copyright 2014 Alexander Kozhevnikov <mentalisttraceur@gmail.com>
 
+# Vendored, portable Bourne shell code; the quoting tricks are intended.
+# shellcheck disable=SC1003,SC2006
+
 # On 2019-04-25, this script was compatible with Bourne and POSIX shells.
 # EXCEPT for the following exceptions:
 # Function declarations (First appeared in SVR2 Bourne shells in 1984).

@@ -26,8 +26,8 @@ chroot_setup() {
 zero_fill() {
   local zero_file="${CHROOT_MOUNT}/zero.fill"
 
-  dd if=/dev/zero of=${zero_file} bs=1M status=progress || true
-  rm ${zero_file}
+  dd if=/dev/zero of="${zero_file}" bs=1M status=progress || true
+  rm "${zero_file}"
 }
 
 # chroot_teardown unmounts the given image file, mounted with chroot_setup.

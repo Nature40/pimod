@@ -10,7 +10,7 @@ env_vars_set() {
 # env_vars_del removes an environment variable mapping.
 # Usage: env_vars_del KEY
 env_vars_del() {
-  unset ENV_VARS["${1}"]
+  unset "ENV_VARS[${1}]"
 }
 
 # env_vars_export_cmd creates a single "export K1='V1' K2='V2' ...;" output,
