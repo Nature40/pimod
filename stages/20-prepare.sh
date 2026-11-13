@@ -31,13 +31,14 @@ PUMP() {
   local loop
   loop=$(mount_image "${DEST_IMG}")
 
-  e2fsck -p -f "/dev/mapper/${loop}p${IMG_ROOT}" || (
-    ERR="${?}"
-    if [ "${ERR}" -gt 2 ]; then
-      echo -e "\033[0;31m### Error: File system repair failed (${ERR}).\033[0m"
-      return "${ERR}"
-    fi
-  )
+  # e2fsck exits with 1 or 2 when it corrected errors, which is fine here.
+  local err=0
+  e2fsck -p -f "/dev/mapper/${loop}p${IMG_ROOT}" || err=$?
+  if [ "${err}" -gt 2 ]; then
+    echo -e "\033[0;31m### Error: File system repair failed (${err}).\033[0m"
+    umount_image "${loop}"
+    return "${err}"
+  fi
   resize2fs "/dev/mapper/${loop}p${IMG_ROOT}"
 
   umount_image "${loop}"

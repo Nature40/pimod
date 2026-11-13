@@ -41,27 +41,39 @@ chroot_teardown() {
   set +eE
   trap - ERR
 
-  mapfile -t RUNNING < <(lsof -t "${CHROOT_MOUNT}")
-  if [ "${RUNNING[*]}" ]; then
-    echo -e "\033[0;33m### Warning: Remaining processes (${RUNNING[*]}) are killed.\033[0m"
-    kill -9 "${RUNNING[@]}"
-  fi
-  unset RUNNING
-
-  qemu_teardown
-
-  i=0
-  while ! umount -Rflv "${CHROOT_MOUNT}/"; do
-    if [ $((i=i+1)) -ge 10 ]; then
-      return 102
+  # The teardown may also run from handle_error after a partial chroot_setup,
+  # so only undo the steps that actually happened.
+  if [[ -n "${CHROOT_MOUNT:-}" ]]; then
+    mapfile -t RUNNING < <(lsof -t "${CHROOT_MOUNT}")
+    if [ "${RUNNING[*]}" ]; then
+      echo -e "\033[0;33m### Warning: Remaining processes (${RUNNING[*]}) are killed.\033[0m"
+      kill -9 "${RUNNING[@]}"
     fi
-    sleep 1
-  done
+    unset RUNNING
 
-  rm -r "${CHROOT_MOUNT}"
-  unset CHROOT_MOUNT
+    # QEMU_MOUNTS is declared by qemu_setup.
+    if declare -p QEMU_MOUNTS &>/dev/null; then
+      qemu_teardown
+    fi
 
-  umount_image "${LOOP}"
-  unset LOOP
+    if mountpoint -q "${CHROOT_MOUNT}"; then
+      i=0
+      while ! umount -Rflv "${CHROOT_MOUNT}/"; do
+        if [ $((i=i+1)) -ge 10 ]; then
+          echo -e "\033[0;31m### Error: Unmounting ${CHROOT_MOUNT} failed.\033[0m"
+          return 102
+        fi
+        sleep 1
+      done
+    fi
+
+    rmdir "${CHROOT_MOUNT}"
+    unset CHROOT_MOUNT
+  fi
+
+  if [[ -n "${LOOP:-}" ]]; then
+    umount_image "${LOOP}"
+    unset LOOP
+  fi
 }
 
