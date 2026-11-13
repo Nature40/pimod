@@ -95,10 +95,21 @@ ADDPART() {
 
   echo "$data_part_start,+,${2}" | sfdisk -a "${DEST_IMG}"
 
+  # Look up the number of the new partition by its start sector; it is not
+  # necessarily IMG_ROOT + 1, e.g., when ADDPART is used more than once.
+  local data_part_nr
+  data_part_nr=$(partx -g -o NR,START "${DEST_IMG}" | \
+    awk -v start="${data_part_start}" '$2 == start { print $1 }')
+
+  if [[ -z "${data_part_nr}" ]]; then
+    echo -e "\033[0;31m### Error: new partition at sector ${data_part_start} not found.\033[0m"
+    return 1
+  fi
+
   local loop
   loop=$(mount_image "${DEST_IMG}")
 
-  mkfs.${3} "/dev/mapper/${loop}p$((IMG_ROOT + 1))"
+  mkfs.${3} "/dev/mapper/${loop}p${data_part_nr}"
 
   umount_image "${loop}"
 }
