@@ -33,14 +33,22 @@ env_vars_export_cmd() {
   echo "export ${pairs[*]};"
 }
 
-# env_vars_subst replaces all previously defined environment variables in the
-# form of "@@ENV@@" by its value.
+# env_vars_subst replaces every "@@KEY@@" in each argument by the value of the
+# environment variable KEY and prints the arguments as a single command, quoted
+# for /bin/sh. Substitution happens before quoting, so values may contain any
+# characters.
 # Usage: env_vars_subst echo hello @@USER_NAME@@
 env_vars_subst() {
+  local -a parts=()
+  local part key
+
   for part in "${@}"; do
     for key in "${!ENV_VARS[@]}"; do
-      part="${part/"@@${key}@@"/${ENV_VARS["$key"]}}"
+      # The quoted replacement keeps "&" literal (bash 5.2 patsub_replacement).
+      part="${part//"@@${key}@@"/"${ENV_VARS["$key"]}"}"
     done
-    printf '%s ' "$part"
+    parts+=("${part}")
   done
+
+  esceval "${parts[@]}"
 }
