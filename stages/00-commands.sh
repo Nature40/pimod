@@ -37,8 +37,7 @@ INCLUDE() {
       echo "Using cached Pifile: ${cached_file}"
     else
       echo "Fetching remote Pifile: ${target}"
-      mkdir -p "$(dirname "${cached_file}")"
-      wget --progress=dot:giga -O "${cached_file}" "${target}" || rm "${cached_file}"
+      from_remote_download "${target}" "${cached_file}" || return 1
     fi
 
     filename="${cached_file}"
