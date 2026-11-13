@@ -6,7 +6,7 @@ Highlighting follows the Pifile commands in this repository. The extension versi
 
 ## Features
 
-- Recognizes `.Pifile` files as the Pifile language.
+- Recognizes `*.Pifile` files and files named `Pifile` as the Pifile language.
 - Highlights Pifile commands: `INCLUDE`, `FROM`, `TO`, `INPLACE`, `PUMP`, `ADDPART`, `INSTALL`, `EXTRACT`, `PATH`, `WORKDIR`, `ENV`, `RUN`, `HOST`, `ZERO`, and `SHRINK`.
 - Highlights shell syntax used in command arguments, including comments, strings, variables, and redirections.
 

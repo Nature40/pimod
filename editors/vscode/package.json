@@ -8,7 +8,7 @@
     "raspberry-pi",
     "pi-image"
   ],
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "nature40",
   "license": "GPL-3.0-only",
   "repository": {
@@ -28,6 +28,7 @@
         "id": "pifile",
         "aliases": ["Pifile", "pifile"],
         "extensions": [".Pifile"],
+        "filenames": ["Pifile"],
         "configuration": "./language-configuration.json"
       }
     ],
