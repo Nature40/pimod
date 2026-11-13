@@ -1,0 +1,11 @@
+# Test for the GitHub Action's `environment` input, run by .github/workflows/tests.yml.
+FROM http://downloads.openwrt.org/releases/18.06.5/targets/brcm2708/bcm2710/openwrt-18.06.5-brcm2708-bcm2710-rpi-3-ext4-factory.img.gz
+
+# NAME=value: set by the action, may contain spaces and further equals signs
+RUN sh -c 'test "$PIMOD_TEST_SET" = "value with spaces=and equals"'
+
+# NAME: forwarded from the step environment, multi-line values are kept
+RUN sh -c 'test "$PIMOD_TEST_FORWARD" = "$(printf "line1\nline2")"'
+
+# variables not listed in `environment` are not passed
+RUN sh -c 'test -z "$PIMOD_TEST_UNLISTED"'

@@ -9,6 +9,14 @@ inputs:
     description: 'Pifile to run'
     required: true
     default: 'Pifile'
+  environment:
+    description: >-
+      Environment variables passed to pimod, one per line, like the list form of docker compose's
+      `environment`: `NAME` forwards NAME from the step's environment (multi-line values work),
+      `NAME=value` sets it. Blank lines and lines starting with `#` are ignored. Other variables
+      are not passed, as pimod runs via sudo.
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -18,5 +26,27 @@ runs:
       shell: bash
     - run: sudo apt-get install -y qemu-user-static || sudo apt-get install -y qemu-user-binfmt
       shell: bash
-    - run: sudo ${{ github.action_path }}/pimod.sh ${{ inputs.pifile }}
+    - run: |
+        names=()
+        while IFS= read -r line; do
+          line="${line#"${line%%[![:space:]]*}"}"
+          line="${line%"${line##*[![:space:]]}"}"
+          [[ -z "$line" || "$line" == \#* ]] && continue
+          name="${line%%=*}"
+          if [[ ! "$name" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+            echo "::error::Invalid environment entry, expected NAME or NAME=value: ${name}"
+            exit 1
+          fi
+          if [[ "$line" == *=* ]]; then
+            export "${name}=${line#*=}"
+          fi
+          names+=("$name")
+        done <<< "$PIMOD_ENVIRONMENT"
+        unset PIMOD_ENVIRONMENT
+
+        preserve=$(IFS=,; echo "${names[*]}")
+        sudo ${preserve:+--preserve-env="$preserve"} "$GITHUB_ACTION_PATH/pimod.sh" "$PIMOD_PIFILE"
       shell: bash
+      env:
+        PIMOD_ENVIRONMENT: ${{ inputs.environment }}
+        PIMOD_PIFILE: ${{ inputs.pifile }}

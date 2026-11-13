@@ -56,3 +56,18 @@ jobs:
         uses: Nature40/pimod@HEAD
         with:
           pifile: examples/RPi-OpenWRT.Pifile
+
+      - name: Run the action's environment test
+        uses: ./
+        env:
+          PIMOD_TEST_FORWARD: |-
+            line1
+            line2
+          PIMOD_TEST_UNLISTED: leak
+        with:
+          pifile: examples/Environment.Pifile
+          environment: |
+            # comments and blank lines are ignored
+
+            PIMOD_TEST_FORWARD
+            PIMOD_TEST_SET=value with spaces=and equals

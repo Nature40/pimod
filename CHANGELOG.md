@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    The title should be `${VERSION} - ${YYYY-MM-DD}` and the description should contain the section from this `CHANGELOG.md`.
 
 ## [Unreleased]
+### Added
+- GitHub Action: `environment` input to pass environment variables to the Pifile, like the list form of docker compose's `environment`: `NAME` forwards a variable from the step's environment (multi-line values work), `NAME=value` sets it. Previously no variables reached the Pifile, as the action runs pimod via `sudo`.
+
+### Changed
+- GitHub Action: the `pifile` input is passed to `pimod.sh` as a single, quoted argument.
 
 ## [0.9.3] - 2026-09-23
 ### Fixed

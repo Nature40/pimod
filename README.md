@@ -127,6 +127,25 @@ jobs:
           pifile: examples/RPi-OpenWRT.Pifile
 ```
 
+The action runs pimod via `sudo`, which does not pass the step's environment on.
+Variables for the Pifile are listed in `environment`, one per line, like the list form of docker compose's `environment`:
+`NAME` forwards `NAME` from the step's environment, `NAME=value` sets it.
+Use the `NAME` form for secrets and multi-line values; `NAME=value` holds a single line.
+
+```yml
+      - name: Run pimod
+        uses: Nature40/pimod@HEAD
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+        with:
+          pifile: Pifile
+          environment: |
+            API_TOKEN
+            STATION_NAME=station-1
+```
+
+Within the image, the variables are available to `RUN` commands, e.g., `RUN sh -c 'echo "$STATION_NAME" > /etc/hostname'`.
+
 ## Pifile
 The Pifile contains commands to modify the image.
 
