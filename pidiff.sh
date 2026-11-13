@@ -164,8 +164,14 @@ UPDATED_TIMESTAMP=\"${updated_timestamp}\"
 "
   
   # Extract the rsync command and heredoc from the original batch.sh file
-  # Find the line starting with "rsync" and everything after it (including heredoc)
-  local rsync_section=$(sed -n '/^rsync/,$p' "${batch_sh_file}")
+  # Find the line starting with "rsync" and everything after it (including
+  # heredoc). Newer rsync versions quote every word, i.e., "'rsync' ...".
+  local rsync_section
+  rsync_section=$(sed -n "/^'\{0,1\}rsync'\{0,1\} /,\$p" "${batch_sh_file}")
+  if [[ -z "${rsync_section}" ]]; then
+    echo -e "\033[0;31m### Error: No rsync command found in ${batch_sh_file}.\033[0m"
+    return 1
+  fi
   # Replace ${1:-default} pattern with ${TARGET_DIR} in the rsync command
   rsync_section=$(echo "${rsync_section}" | sed 's/\${1:-[^}]*}/\${TARGET_DIR}/g')
   # Replace --read-batch=/tmp/... with --read-batch using the generated batch filename
