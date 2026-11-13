@@ -50,10 +50,9 @@ qemu_teardown() {
   rm "${QEMU_MOUNTS[@]}"
   unset QEMU_MOUNTS
 
-  # disable arch
-  for arch in "${QEMU_ARCHS[@]}"; do
-    update-binfmts --disable "qemu-${arch}"
-  done
+  # The binfmt handlers enabled in qemu_setup are deliberately left enabled:
+  # they are host-wide, and disabling them would break concurrent pimod runs
+  # or other emulated containers on the same host.
 
   # enable preloading libraries
   [[ -f "${CHROOT_MOUNT}/etc/ld.so.preload" ]] && \
