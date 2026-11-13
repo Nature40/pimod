@@ -13,8 +13,9 @@ env_vars_del() {
   unset ENV_VARS["${1}"]
 }
 
-# env_vars_export_cmd creates a single "export K1=V1 K2=V2 ...;" output. If no
-# values are present, an empty output is generated.
+# env_vars_export_cmd creates a single "export K1='V1' K2='V2' ...;" output,
+# with each value quoted for /bin/sh. If no values are present, an empty
+# output is generated.
 # Usage: env_vars_export_cmd
 env_vars_export_cmd() {
   if [[ "${#ENV_VARS[@]}" -eq "0" ]]; then
@@ -23,9 +24,10 @@ env_vars_export_cmd() {
   fi
 
   declare -a pairs
+  local key
 
   for key in "${!ENV_VARS[@]}"; do
-    pairs+=("${key}=${ENV_VARS["$key"]}")
+    pairs+=("${key}=$(esceval "${ENV_VARS["$key"]}")")
   done
 
   echo "export ${pairs[*]};"
