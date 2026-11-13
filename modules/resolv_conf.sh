@@ -10,7 +10,9 @@ resolv_conf_setup() {
   case "${PIMOD_HOST_RESOLV_TYPE}" in
     auto)
       # Do not mount the host's file when a /etc/resolv.conf already exists.
-      ((test -f "${resolv_conf}") || (RUN test -e "/etc/resolv.conf")) && return
+      if [[ -f "${resolv_conf}" ]] || RUN test -e "/etc/resolv.conf"; then
+        return
+      fi
       ;;
 
     guest)

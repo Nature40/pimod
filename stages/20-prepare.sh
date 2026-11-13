@@ -15,7 +15,7 @@ PUMP() {
   echo -n "pump conversion to ${BS} * "
   units -t "${1}B" "${BS}B"
 
-  COUNT=$(units -t ${1}B ${BS}B)
+  COUNT=$(units -t "${1}B" "${BS}B")
 
   # Ceil the number if a decimal is given.
   if [[ "${COUNT}" == *.* ]]; then
@@ -31,13 +31,14 @@ PUMP() {
   local loop
   loop=$(mount_image "${DEST_IMG}")
 
-  e2fsck -p -f "/dev/mapper/${loop}p${IMG_ROOT}" || (
-    ERR="${?}"
-    if [ "${ERR}" -gt 2 ]; then
-      echo -e "\033[0;31m### Error: File system repair failed (${ERR}).\033[0m"
-      return "${ERR}"
-    fi
-  )
+  # e2fsck exits with 1 or 2 when it corrected errors, which is fine here.
+  local err=0
+  e2fsck -p -f "/dev/mapper/${loop}p${IMG_ROOT}" || err=$?
+  if [ "${err}" -gt 2 ]; then
+    echo -e "\033[0;31m### Error: File system repair failed (${err}).\033[0m"
+    umount_image "${loop}"
+    return "${err}"
+  fi
   resize2fs "/dev/mapper/${loop}p${IMG_ROOT}"
 
   umount_image "${loop}"
@@ -65,7 +66,7 @@ ADDPART() {
   echo -n "addpart conversion to ${BS} * "
   units -t "${1}B" "${BS}B"
 
-  COUNT=$(units -t ${1}B ${BS}B)
+  COUNT=$(units -t "${1}B" "${BS}B")
 
   # Ceil the number if a decimal is given.
   if [[ "${COUNT}" == *.* ]]; then
@@ -83,7 +84,7 @@ ADDPART() {
 
   echo "checking mkfs.${3}"
 
-  if ! command -v mkfs.${3}; then
+  if ! command -v "mkfs.${3}"; then
     echo -e "\033[0;31m### Error: file system ${3} is not available.\033[0m"
     return 1
   fi
@@ -95,10 +96,21 @@ ADDPART() {
 
   echo "$data_part_start,+,${2}" | sfdisk -a "${DEST_IMG}"
 
+  # Look up the number of the new partition by its start sector; it is not
+  # necessarily IMG_ROOT + 1, e.g., when ADDPART is used more than once.
+  local data_part_nr
+  data_part_nr=$(partx -g -o NR,START "${DEST_IMG}" | \
+    awk -v start="${data_part_start}" '$2 == start { print $1 }')
+
+  if [[ -z "${data_part_nr}" ]]; then
+    echo -e "\033[0;31m### Error: new partition at sector ${data_part_start} not found.\033[0m"
+    return 1
+  fi
+
   local loop
   loop=$(mount_image "${DEST_IMG}")
 
-  mkfs.${3} "/dev/mapper/${loop}p$((IMG_ROOT + 1))"
+  "mkfs.${3}" "/dev/mapper/${loop}p${data_part_nr}"
 
   umount_image "${loop}"
 }

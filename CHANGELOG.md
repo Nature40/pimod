@@ -16,6 +16,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    The title is `${VERSION} - ${YYYY-MM-DD}` and the description is the section from this `CHANGELOG.md`, both taken from the `## [X.Y.Z] - YYYY-MM-DD` headline.
 
 ## [Unreleased]
+### Added
+- Tests for `SHRINK` on MBR and GPT images (`tests/shrink.sh`) and for creating and applying pidiff updates (`tests/pidiff.sh`), run in CI.
+- VS Code extension 0.1.1: files named `Pifile` are recognized as Pifiles.
+
+### Changed
+- Errors after the chroot teardown, e.g. in `SHRINK`, now fail the build. Previously they were ignored and pimod exited with 0.
+- The host's binfmt handlers enabled for QEMU are left enabled on teardown, as they are host-wide.
+- pidiff transfers ACLs and extended attributes (`--acls --xattrs`), e.g. file capabilities.
+- The Docker image is published as `latest` only from `master`; version tags publish their version tag, and pull requests only build the image.
+- ShellCheck checks all scripts.
+
+### Fixed
+- `SHRINK` keeps GPT images valid: the backup GPT header and partition table are rewritten at the new end of the image.
+- `SHRINK` stops when the file system check fails, and reports the real `resize2fs` and `sfdisk` exit codes.
+- `ENV` values are quoted, so values with spaces, quotes, `$` or `;` reach `RUN` and `HOST` unchanged.
+- `@@VAR@@` is substituted at every occurrence, and values containing `&` or `'` are substituted correctly.
+- `ADDPART` formats the partition it created; a second `ADDPART` no longer reformats the first one.
+- Interrupted downloads of remote images and Pifiles no longer leave a truncated file in the cache.
+- `RUN` fails when the `WORKDIR` does not exist instead of running in `/`.
+- Errors during a partially completed chroot setup are cleaned up properly and keep their exit code.
+- `/etc/ld.so.preload` is restored on hosts without QEMU, e.g. native ARM hosts.
+- pidiff:
+  - The generated `batch.sh` works with newer rsync versions, which quote the command. Previously it applied nothing and still reported success.
+  - The generated `batch.sh` reports rsync errors, and quotes the batch file name.
+  - The pidiff GitHub Action no longer interpolates its inputs into the shell script.
 
 ## [0.9.4] - 2026-11-13
 ### Added

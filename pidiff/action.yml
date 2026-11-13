@@ -34,24 +34,31 @@ runs:
     - run: sudo apt-get install -y kpartx rsync
       shell: bash
     - name: Run pidiff
+      # Inputs are passed via the environment, never interpolated into the
+      # script, so they cannot inject shell code.
       run: |
         PIDIFF_ARGS=()
-        if [[ -n "${{ inputs.partition }}" ]]; then
-          PIDIFF_ARGS+=("--partition=${{ inputs.partition }}")
+        if [[ -n "${PIDIFF_PARTITION}" ]]; then
+          PIDIFF_ARGS+=("--partition=${PIDIFF_PARTITION}")
         fi
-        if [[ -n "${{ inputs.output }}" ]]; then
-          PIDIFF_ARGS+=("--output=${{ inputs.output }}")
+        if [[ -n "${PIDIFF_OUTPUT}" ]]; then
+          PIDIFF_ARGS+=("--output=${PIDIFF_OUTPUT}")
         fi
-        if [[ "${{ inputs.tar }}" == "true" ]]; then
+        if [[ "${PIDIFF_TAR}" == "true" ]]; then
           PIDIFF_ARGS+=("--tar")
         fi
-        if [[ -n "${{ inputs.rsync_options }}" ]]; then
+        if [[ -n "${PIDIFF_RSYNC_OPTIONS}" ]]; then
           # Split rsync_options by spaces and add each option to PIDIFF_ARGS
           # This handles options like --verbose --exclude=*.pyc --exclude-from=file
-          # Note: For options with spaces or special characters, use YAML quotes
-          read -ra RSYNC_OPTS <<< "${{ inputs.rsync_options }}"
+          read -ra RSYNC_OPTS <<< "${PIDIFF_RSYNC_OPTIONS}"
           PIDIFF_ARGS+=("${RSYNC_OPTS[@]}")
         fi
-        sudo ${{ github.action_path }}/../pidiff.sh "${PIDIFF_ARGS[@]}" "${{ inputs.base_image }}" "${{ inputs.updated_image }}"
+        sudo "${GITHUB_ACTION_PATH}/../pidiff.sh" "${PIDIFF_ARGS[@]}" "${PIDIFF_BASE_IMAGE}" "${PIDIFF_UPDATED_IMAGE}"
       shell: bash
-
+      env:
+        PIDIFF_PARTITION: ${{ inputs.partition }}
+        PIDIFF_OUTPUT: ${{ inputs.output }}
+        PIDIFF_TAR: ${{ inputs.tar }}
+        PIDIFF_RSYNC_OPTIONS: ${{ inputs.rsync_options }}
+        PIDIFF_BASE_IMAGE: ${{ inputs.base_image }}
+        PIDIFF_UPDATED_IMAGE: ${{ inputs.updated_image }}

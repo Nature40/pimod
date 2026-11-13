@@ -76,6 +76,7 @@ extract_os_release_variable() {
   if [[ -f "${os_release_file}" ]]; then
     # Source the os-release file to get the variable
     local var_value=""
+    # shellcheck source=/dev/null
     if . "${os_release_file}" 2>/dev/null; then
       # Use indirect variable reference to get the value
       eval "var_value=\${${var_name}:-}"
@@ -92,7 +93,8 @@ extract_os_release_timestamp() {
   local os_release_file="$1"
   if [[ -f "${os_release_file}" ]]; then
     # Get access time in seconds since epoch (GNU stat)
-    local atime=$(stat -c %X "${os_release_file}" 2>/dev/null || echo "")
+    local atime
+    atime=$(stat -c %X "${os_release_file}" 2>/dev/null || echo "")
     if [[ -n "${atime}" ]] && [[ "${atime}" =~ ^[0-9]+$ ]]; then
       # Convert to ISO 8601 UTC format (GNU date)
       date -u -d "@${atime}" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || echo ""
@@ -121,20 +123,30 @@ inject_metadata() {
   fi
   
   # Extract metadata from mounted images
-  local base_version=$(extract_os_release_variable "${base_mount}/etc/os-release" "PRETTY_NAME")
-  local updated_version=$(extract_os_release_variable "${updated_mount}/etc/os-release" "PRETTY_NAME")
-  local base_timestamp=$(extract_os_release_timestamp "${base_mount}/etc/os-release")
-  local updated_timestamp=$(extract_os_release_timestamp "${updated_mount}/etc/os-release")
-  local base_version_id=$(extract_os_release_variable "${base_mount}/etc/os-release" "VERSION_ID")
-  local updated_version_id=$(extract_os_release_variable "${updated_mount}/etc/os-release" "VERSION_ID")
-  local base_version_commit=$(extract_os_release_variable "${base_mount}/etc/os-release" "VERSION_COMMIT")
-  local updated_version_commit=$(extract_os_release_variable "${updated_mount}/etc/os-release" "VERSION_COMMIT")
+  local base_version
+  base_version=$(extract_os_release_variable "${base_mount}/etc/os-release" "PRETTY_NAME")
+  local updated_version
+  updated_version=$(extract_os_release_variable "${updated_mount}/etc/os-release" "PRETTY_NAME")
+  local base_timestamp
+  base_timestamp=$(extract_os_release_timestamp "${base_mount}/etc/os-release")
+  local updated_timestamp
+  updated_timestamp=$(extract_os_release_timestamp "${updated_mount}/etc/os-release")
+  local base_version_id
+  base_version_id=$(extract_os_release_variable "${base_mount}/etc/os-release" "VERSION_ID")
+  local updated_version_id
+  updated_version_id=$(extract_os_release_variable "${updated_mount}/etc/os-release" "VERSION_ID")
+  local base_version_commit
+  base_version_commit=$(extract_os_release_variable "${base_mount}/etc/os-release" "VERSION_COMMIT")
+  local updated_version_commit
+  updated_version_commit=$(extract_os_release_variable "${updated_mount}/etc/os-release" "VERSION_COMMIT")
   
   # Get rsync version
-  local rsync_version=$(rsync --version | head -n1 | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" | head -n1 || echo "")
+  local rsync_version
+  rsync_version=$(rsync --version | head -n1 | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" | head -n1 || echo "")
   
   # Get current timestamp in ISO 8601 UTC
-  local created=$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || echo "")
+  local created
+  created=$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || echo "")
   
   # Build metadata header
   local metadata_header="# pidiff metadata - automatically generated
@@ -164,14 +176,26 @@ UPDATED_TIMESTAMP=\"${updated_timestamp}\"
 "
   
   # Extract the rsync command and heredoc from the original batch.sh file
-  # Find the line starting with "rsync" and everything after it (including heredoc)
-  local rsync_section=$(sed -n '/^rsync/,$p' "${batch_sh_file}")
+  # Find the line starting with "rsync" and everything after it (including
+  # heredoc). Newer rsync versions quote every word, i.e., "'rsync' ...".
+  local rsync_section
+  rsync_section=$(sed -n "/^'\{0,1\}rsync'\{0,1\} /,\$p" "${batch_sh_file}")
+  if [[ -z "${rsync_section}" ]]; then
+    echo -e "\033[0;31m### Error: No rsync command found in ${batch_sh_file}.\033[0m"
+    return 1
+  fi
   # Replace ${1:-default} pattern with ${TARGET_DIR} in the rsync command
+  # shellcheck disable=SC2001  # a regex, not expressible as a bash pattern
   rsync_section=$(echo "${rsync_section}" | sed 's/\${1:-[^}]*}/\${TARGET_DIR}/g')
   # Replace --read-batch=/tmp/... with --read-batch using the generated batch filename
   # Assumes script is executed from the directory where batch file is located
-  local batch_basename=$(basename "${batch_filename}")
-  rsync_section=$(echo "${rsync_section}" | sed "s|--read-batch=[^ ]*|--read-batch=\"${batch_basename}\"|g")
+  # The batch file name is shell-quoted, as it may contain any characters.
+  # rsync writes the temporary path either plain or single-quoted.
+  local batch_file="${batch_sh_file%.sh}"
+  local read_batch
+  read_batch="--read-batch=$(printf '%q' "$(basename "${batch_filename}")")"
+  rsync_section="${rsync_section//"--read-batch='${batch_file}'"/"${read_batch}"}"
+  rsync_section="${rsync_section//"--read-batch=${batch_file}"/"${read_batch}"}"
   
   # Build enhanced batch.sh script
   local enhanced_script="#!/usr/bin/env bash
@@ -234,9 +258,11 @@ echo \"Applying update to: \${TARGET_DIR}\"
 echo \"This will modify files in the target directory.\"
 echo \"\"
 
+# Run rsync without errexit, so its exit code can be reported below.
+set +e
 ${rsync_section}
-
 RSYNC_EXIT_CODE=\$?
+set -e
 
 echo \"\"
 case \${RSYNC_EXIT_CODE} in
@@ -262,7 +288,7 @@ main() {
   local partition="2"
   local output_path=""
   local create_tar=false
-  local rsync_options="--recursive --links --perms --times --group --owner --devices --hard-links --delete --compress"
+  local rsync_args=(--recursive --links --perms --times --group --owner --devices --hard-links --acls --xattrs --delete --compress)
   local rsync_passthrough=()
   
   # Parse arguments
@@ -326,19 +352,20 @@ main() {
   fi
   
   # Combine default rsync options with passed-through options
-  if [[ ${#rsync_passthrough[@]} -gt 0 ]]; then
-    rsync_options="${rsync_options} ${rsync_passthrough[*]}"
-  fi
+  rsync_args+=("${rsync_passthrough[@]}")
   
   # Generate output path if not specified
   if [[ -z "${output_path}" ]]; then
-    local base_basename=$(basename "${base_image}" .img)
-    local updated_basename=$(basename "${updated_image}" .img)
+    local base_basename
+    base_basename=$(basename "${base_image}" .img)
+    local updated_basename
+    updated_basename=$(basename "${updated_image}" .img)
     output_path="${base_basename}_to_${updated_basename}.batch"
   fi
   
   # Ensure output directory exists
-  local output_dir=$(dirname "${output_path}")
+  local output_dir
+  output_dir=$(dirname "${output_path}")
   if [[ -n "${output_dir}" ]] && [[ "${output_dir}" != "." ]]; then
     mkdir -p "${output_dir}"
   fi
@@ -386,17 +413,18 @@ main() {
 
 
   # Use fixed filenames for batch files (in temporary directory)
-  local temp_dir=$(mktemp -d)
+  local temp_dir
+  temp_dir=$(mktemp -d)
   local batch_file="${temp_dir}/batch"
   local batch_sh_file="${batch_file}.sh"
 
   # rsync with default options plus any passed-through options, only write the batch file
-  rsync ${rsync_options} --only-write-batch="${batch_file}" "${UPDATED_MOUNT}/" "${BASE_MOUNT}/" 
+  rsync "${rsync_args[@]}" --only-write-batch="${batch_file}" "${UPDATED_MOUNT}/" "${BASE_MOUNT}/" 
   
   # Inject metadata into batch.sh file if it exists
   if [[ -f "${batch_sh_file}" ]]; then
     echo -e "\033[0;32m### Injecting metadata into batch script...\033[0m"
-    inject_metadata "${batch_sh_file}" "${BASE_MOUNT}" "${UPDATED_MOUNT}" "${base_image}" "${updated_image}" "${partition}" "${rsync_options}" "${output_path}"
+    inject_metadata "${batch_sh_file}" "${BASE_MOUNT}" "${UPDATED_MOUNT}" "${base_image}" "${updated_image}" "${partition}" "${rsync_args[*]}" "${output_path}"
   fi
   
   if [[ "${create_tar}" == true ]]; then
@@ -416,8 +444,14 @@ main() {
       # Create tar archive (no compression) and remove original files after archiving
       # Use --remove-files to automatically remove files after adding them to archive
       # Change to temp_dir to use relative paths in archive, use absolute path for output
-      local archive_abs_path=$(realpath "${archive_path}" 2>/dev/null || echo "${archive_path}")
-      (cd "${temp_dir}" && tar --remove-files -cf "${archive_abs_path}" batch batch.sh 2>/dev/null || tar --remove-files -cf "${archive_abs_path}" batch)
+      local archive_abs_path
+      archive_abs_path=$(realpath "${archive_path}" 2>/dev/null || echo "${archive_path}")
+      local batch_names=()
+      local batch
+      for batch in "${batch_files[@]}"; do
+        batch_names+=("$(basename "${batch}")")
+      done
+      tar -C "${temp_dir}" --remove-files -cf "${archive_abs_path}" "${batch_names[@]}"
       
       # Clean up temp directory (should be empty after --remove-files, but be safe)
       rmdir "${temp_dir}" 2>/dev/null || rm -rf "${temp_dir}"
@@ -432,7 +466,8 @@ main() {
     # Copy batch files to output location (default behavior)
     echo -e "\033[0;32m### Copying batch files to output location...\033[0m"
     
-    local output_dir=$(dirname "${output_path}")
+    local output_dir
+    output_dir=$(dirname "${output_path}")
     if [[ -n "${output_dir}" ]] && [[ "${output_dir}" != "." ]]; then
       mkdir -p "${output_dir}"
     fi
@@ -450,7 +485,8 @@ main() {
     # Clean up temp directory
     rm -rf "${temp_dir}"
     
-    local script_name=$(basename "${output_path}.sh")
+    local script_name
+    script_name=$(basename "${output_path}.sh")
     echo -e "\033[0;32m### To apply this update, run: sudo ./${script_name} /path/to/target/\033[0m"
   fi
   

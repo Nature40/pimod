@@ -119,11 +119,11 @@ ENV() {
 RUN() {
   echo -e "\033[0;32m### RUN ${*}\033[0m"
 
-  local cmd_esceval="$(esceval "$@")"
-  local cmd_env_subst="$(env_vars_subst "$cmd_esceval")"
+  local cmd_env_subst
+  cmd_env_subst="$(env_vars_subst "$@")"
 
   PATH=${GUEST_PATH} chroot "${CHROOT_MOUNT}" \
-    /bin/sh -c "cd ${WORKDIR_PATH}; $(env_vars_export_cmd) ${cmd_env_subst}"
+    /bin/sh -c "cd $(esceval "${WORKDIR_PATH}") || exit; $(env_vars_export_cmd) ${cmd_env_subst}"
 }
 
 # HOST executed a command on the local host and can be used to prepare files,
@@ -133,8 +133,8 @@ RUN() {
 HOST() {
   echo -e "\033[0;32m### HOST ${*}\033[0m"
 
-  local cmd_esceval="$(esceval "$@")"
-  local cmd_env_subst="$(env_vars_subst "$cmd_esceval")"
+  local cmd_env_subst
+  cmd_env_subst="$(env_vars_subst "$@")"
 
   /bin/sh -c "$(env_vars_export_cmd) ${cmd_env_subst}"
 }

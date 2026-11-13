@@ -17,6 +17,6 @@ handle_error() {
   fi
 
   # teardown chroot / mount / loop environment
-  chroot_teardown
+  chroot_teardown || true
   exit "${1}"
 }

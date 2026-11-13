@@ -39,6 +39,66 @@ jobs:
           echo "${img} mode=${mode}"
           test -r "$img"
 
+  test-shrink:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
+        label: [dos, gpt]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y binfmt-support fdisk file gdisk kpartx lsof units
+          sudo apt-get install -y qemu-user-static || sudo apt-get install -y qemu-user-binfmt
+        shell: bash
+
+      - name: SHRINK a ${{ matrix.label }} image
+        run: sudo tests/shrink.sh ${{ matrix.label }}
+
+      - name: SHRINK a ${{ matrix.label }} image to a given size
+        run: sudo tests/shrink.sh ${{ matrix.label }} 120M
+
+  test-pidiff:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fdisk kpartx libcap2-bin rsync
+        shell: bash
+
+      - name: Create and apply an update
+        run: sudo tests/pidiff.sh "${RUNNER_TEMP}/pidiff"
+
+      # The output name contains a command substitution, which must end up
+      # in the file name instead of being executed.
+      - name: Run the pidiff action
+        uses: ./pidiff
+        with:
+          base_image: ${{ runner.temp }}/pidiff/base.img
+          updated_image: ${{ runner.temp }}/pidiff/updated.img
+          output: update$(touch injected)
+
+      - name: Action inputs are not executed
+        run: |
+          test ! -e injected
+          test -f 'update$(touch injected)'
+          test -f 'update$(touch injected).sh'
+
   test-action:
     runs-on: ${{ matrix.os }}
 
@@ -53,7 +113,7 @@ jobs:
           submodules: recursive
 
       - name: Run pimod OpenWRT example
-        uses: Nature40/pimod@HEAD
+        uses: ./
         with:
           pifile: examples/RPi-OpenWRT.Pifile
 

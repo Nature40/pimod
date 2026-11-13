@@ -8,6 +8,25 @@ from_remote_valid() {
   [[ $1 =~ $schemeRegexp ]]
 }
 
+# from_remote_download downloads a URL to a path. The file is written to a
+# temporary ".part" file first and only moved into place once complete, so an
+# interrupted or failed download never leaves a truncated file in the cache.
+# Usage: from_remote_download URL PATH
+from_remote_download() {
+  local url="${1}"
+  local path="${2}"
+
+  mkdir -p "$(dirname "${path}")"
+
+  if ! wget --progress=dot:giga -O "${path}.part" "${url}"; then
+    rm -f "${path}.part"
+    echo -e "\033[0;31m### Error: Downloading ${url} failed.\033[0m"
+    return 1
+  fi
+
+  mv "${path}.part" "${path}"
+}
+
 # apply_creation_mode sets a regular file to the mode a shell redirect would
 # have used under the current umask. mktemp creates 0600, and writing into
 # that existing file keeps 0600; mv and cp cannot add permission bits later.
@@ -48,8 +67,7 @@ from_remote_fetch() {
     echo "Using cache: ${download_path}"
   else
     echo "Fetching remote: ${url}"
-    mkdir -p "$(dirname "${download_path}")"
-    wget --progress=dot:giga -O "${download_path}" "${url}" || rm "${download_path}"
+    from_remote_download "${url}" "${download_path}" || return 1
   fi
 
   local tmpfile

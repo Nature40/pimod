@@ -1,14 +1,19 @@
 name: Build and upload DockerHub image
 
-on: [push]
+# Images are published for the default branch and version tags only. Pull
+# requests build the image without publishing it.
+on:
+  push:
+    branches: [master]
+    tags: ["v*"]
+  pull_request:
 
 env:
   DOCKERHUB_USER: hoechst
   DOCKER_IMAGE: nature40/pimod
 
 permissions:
-  id-token: write
-  contents: write
+  contents: read
 
 jobs:
   build-all:
@@ -20,19 +25,27 @@ jobs:
           path: .
 
       - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v4
         with:
           # login uses access token: https://docs.docker.com/docker-hub/access-tokens/
           username: ${{ env.DOCKERHUB_USER}}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # "latest" follows the default branch; version tags get their own tag,
+      # e.g. nature40/pimod:v0.9.4.
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.DOCKER_IMAGE }}
           flavor: |
-            latest=true
+            latest=false
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -44,7 +57,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

@@ -12,5 +12,9 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Shellcheck pimod.sh
-        run: shellcheck -s bash -x pimod.sh
+      # Settings are in .shellcheckrc. The modules and stages are sourced via
+      # runtime paths, so each script is checked on its own.
+      - name: Shellcheck all scripts
+        run: |
+          shellcheck --version
+          shellcheck pimod.sh pidiff.sh modules/*.sh stages/*.sh tests/*.sh
