@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    The title is `${VERSION} - ${YYYY-MM-DD}` and the description is the section from this `CHANGELOG.md`, both taken from the `## [X.Y.Z] - YYYY-MM-DD` headline.
 
 ## [Unreleased]
+
+## [0.9.4] - 2026-11-13
 ### Added
 - GitHub Action: `environment` input to pass environment variables to the Pifile, like the list form of docker compose's `environment`: `NAME` forwards a variable from the step's environment (multi-line values work), `NAME=value` sets it. Previously no variables reached the Pifile, as the action runs pimod via `sudo`.
 
@@ -174,7 +176,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release of a working version of pimod.
 
-[Unreleased]: https://github.com/Nature40/pimod/compare/v0.9.3...HEAD
+[Unreleased]: https://github.com/Nature40/pimod/compare/v0.9.4...HEAD
+[0.9.4]: https://github.com/Nature40/pimod/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/Nature40/pimod/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/Nature40/pimod/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/Nature40/pimod/compare/v0.9.0...v0.9.1
