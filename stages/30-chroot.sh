@@ -123,7 +123,7 @@ RUN() {
   cmd_env_subst="$(env_vars_subst "$@")"
 
   PATH=${GUEST_PATH} chroot "${CHROOT_MOUNT}" \
-    /bin/sh -c "cd ${WORKDIR_PATH}; $(env_vars_export_cmd) ${cmd_env_subst}"
+    /bin/sh -c "cd $(esceval "${WORKDIR_PATH}") || exit; $(env_vars_export_cmd) ${cmd_env_subst}"
 }
 
 # HOST executed a command on the local host and can be used to prepare files,
