@@ -5,10 +5,14 @@
 # must fail and report the rsync error.
 # Requires root, kpartx and setcap (libcap2-bin).
 #
-# Usage: sudo tests/pidiff.sh
+# If KEEP_DIR is given, the generated base.img and updated.img are copied
+# there, e.g., to test the pidiff GitHub Action with them.
+#
+# Usage: sudo tests/pidiff.sh [KEEP_DIR]
 
 set -euo pipefail
 
+keep_dir="${1:-}"
 pidiff="$(cd -P "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null && pwd)/pidiff.sh"
 work=$(mktemp -d)
 trap 'mountpoint -q "${work}/mnt" && umount "${work}/mnt"; rm -rf "${work}"' EXIT
@@ -87,5 +91,10 @@ grep -qE "^(Error|Warning): " <<< "${output}" || fail "rsync error ${rc} was not
 
 umount mnt
 detach "${dev}"
+
+if [[ -n "${keep_dir}" ]]; then
+  mkdir -p "${keep_dir}"
+  cp base.img updated.img "${keep_dir}/"
+fi
 
 echo "### pidiff test passed"
