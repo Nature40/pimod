@@ -56,6 +56,13 @@ sudo ./batch.sh /path/to/target/rootfs
 ```
 
 The batch script includes safety checks: root privileges, target validation, and OS version matching.
+It exits with rsync's exit code and explains common codes, e.g. 23 and 24 for partial transfers.
+
+## rsync options
+
+pidiff always uses `--recursive --links --perms --times --group --owner --devices --hard-links --acls --xattrs --delete --compress`; `rsync_options` adds to these.
+`--acls` and `--xattrs` carry ACLs and extended attributes, including file capabilities such as `cap_net_raw` on `ping`.
+Applying an update therefore needs an rsync with ACL and xattr support and a target file system that supports them, such as ext4.
 
 ## See Also
 

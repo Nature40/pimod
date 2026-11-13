@@ -64,6 +64,26 @@ jobs:
       - name: SHRINK a ${{ matrix.label }} image to a given size
         run: sudo tests/shrink.sh ${{ matrix.label }} 120M
 
+  test-pidiff:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fdisk kpartx libcap2-bin rsync
+        shell: bash
+
+      - name: Create and apply an update
+        run: sudo tests/pidiff.sh
+
   test-action:
     runs-on: ${{ matrix.os }}
 

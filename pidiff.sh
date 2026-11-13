@@ -240,9 +240,11 @@ echo \"Applying update to: \${TARGET_DIR}\"
 echo \"This will modify files in the target directory.\"
 echo \"\"
 
+# Run rsync without errexit, so its exit code can be reported below.
+set +e
 ${rsync_section}
-
 RSYNC_EXIT_CODE=\$?
+set -e
 
 echo \"\"
 case \${RSYNC_EXIT_CODE} in
@@ -268,7 +270,7 @@ main() {
   local partition="2"
   local output_path=""
   local create_tar=false
-  local rsync_options="--recursive --links --perms --times --group --owner --devices --hard-links --delete --compress"
+  local rsync_options="--recursive --links --perms --times --group --owner --devices --hard-links --acls --xattrs --delete --compress"
   local rsync_passthrough=()
   
   # Parse arguments
