@@ -33,10 +33,13 @@ zero_fill() {
 # chroot_teardown unmounts the given image file, mounted with chroot_setup.
 # Usage: chroot_teardown PATH_TO_IMAGE
 chroot_teardown() {
-  # disable script abort on error
+  # Keep tearing down on errors, so every step gets its chance to run. With
+  # "local -", errexit and errtrace are restored when this function returns,
+  # so later stages still abort on errors. The chroot is gone afterwards, so
+  # the ERR handler installed by chroot_setup is removed for good.
+  local -
   set +eE
-  # ignore further errors
-  trap "" ERR
+  trap - ERR
 
   mapfile -t RUNNING < <(lsof -t "${CHROOT_MOUNT}")
   if [ "${RUNNING[*]}" ]; then
