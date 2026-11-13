@@ -38,25 +38,30 @@ qemu_setup() {
 }
 
 qemu_teardown() {
-  # unmount qemu binaries, remove temp files
-  i=0
-  while ! umount "${QEMU_MOUNTS[@]}"; do
-    if [ $((i=i+1)) -ge 10 ]; then
-      return 101
-    fi
-    sleep 1
-  done
-
-  rm "${QEMU_MOUNTS[@]}"
-  unset QEMU_MOUNTS
+  # Re-enable preloading libraries first, so the image is restored even if
+  # unmounting the qemu binaries fails below.
+  if [[ -f "${CHROOT_MOUNT}/etc/ld.so.preload" ]]; then
+    sed -i 's/^#//g' "${CHROOT_MOUNT}/etc/ld.so.preload"
+  fi
 
   # The binfmt handlers enabled in qemu_setup are deliberately left enabled:
   # they are host-wide, and disabling them would break concurrent pimod runs
   # or other emulated containers on the same host.
 
-  # enable preloading libraries
-  [[ -f "${CHROOT_MOUNT}/etc/ld.so.preload" ]] && \
-    sed -i 's/^#//g' "${CHROOT_MOUNT}/etc/ld.so.preload"
+  # Unmount the qemu binaries and remove their mount points. On hosts without
+  # qemu, e.g., native ARM hosts, nothing was mounted.
+  if [[ "${#QEMU_MOUNTS[@]}" -gt 0 ]]; then
+    i=0
+    while ! umount "${QEMU_MOUNTS[@]}"; do
+      if [ $((i=i+1)) -ge 10 ]; then
+        return 101
+      fi
+      sleep 1
+    done
+
+    rm "${QEMU_MOUNTS[@]}"
+  fi
+  unset QEMU_MOUNTS
 
   return 0
 }
