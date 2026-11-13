@@ -1,0 +1,55 @@
+name: Create GitHub release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Extract release notes from CHANGELOG.md
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          version="${TAG#v}"
+
+          # Heading looks like: ## [0.9.3] - 2026-09-23
+          heading="$(grep -m1 -E "^## \[${version//./\\.}\] - " CHANGELOG.md || true)"
+          if [ -z "$heading" ]; then
+            echo "::error::No '## [${version}] - YYYY-MM-DD' section found in CHANGELOG.md"
+            exit 1
+          fi
+          date="${heading##* - }"
+          echo "RELEASE_TITLE=${version} - ${date}" >> "$GITHUB_ENV"
+
+          # Everything between this heading and the next '## ' heading.
+          awk -v h="$heading" '
+            $0 == h { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' | sed '/./,$!d' > release-notes.md
+
+          if [ ! -s release-notes.md ]; then
+            echo "::error::CHANGELOG.md section for ${version} is empty"
+            exit 1
+          fi
+          cat release-notes.md
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" \
+            --verify-tag \
+            --title "$RELEASE_TITLE" \
+            --notes-file release-notes.md

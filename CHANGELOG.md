@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 3. Create a commit for the release.
 4. Create a (signed) git tag in the form of `vX.Y.Z`, e.g., `v0.1.0` or `v1.2.3`.
 5. Push both the commit and the tag.
-6. Create a GitHub release via the web UI.
-   The title should be `${VERSION} - ${YYYY-MM-DD}` and the description should contain the section from this `CHANGELOG.md`.
+6. The `release` workflow creates the GitHub release for the pushed tag.
+   The title is `${VERSION} - ${YYYY-MM-DD}` and the description is the section from this `CHANGELOG.md`, both taken from the `## [X.Y.Z] - YYYY-MM-DD` headline.
 
 ## [Unreleased]
 ### Added
