@@ -64,14 +64,18 @@ echo "excluded" > mnt/excluded.pyc
 umount mnt
 detach "${dev}"
 
-"${pidiff}" --exclude='*.pyc' base.img updated.img
+# The output name contains a space and a command substitution, which the
+# generated batch script must treat as a plain file name.
+update='update $(touch injected)'
+"${pidiff}" --exclude='*.pyc' --output="${update}" base.img updated.img
 
 # Apply the update to a writable copy of the base image.
 cp base.img target.img
 dev=$(attach target.img)
 mount "${dev}" mnt
-./base_to_updated.batch.sh "${work}/mnt"
+"./${update}.sh" "${work}/mnt"
 
+[[ ! -e injected ]] || fail "batch script executed a command from its file name"
 [[ "$(cat mnt/changed)" == "updated content" ]] || fail "changed file was not updated"
 [[ "$(getcap mnt/capability)" == *cap_net_raw* ]] || fail "file capability was not transferred"
 [[ ! -e mnt/excluded.pyc ]] || fail "excluded file was transferred"
@@ -84,7 +88,7 @@ dev=$(attach readonly.img)
 mount -o ro "${dev}" mnt
 
 rc=0
-output=$(./base_to_updated.batch.sh "${work}/mnt" 2>&1) || rc=$?
+output=$("./${update}.sh" "${work}/mnt" 2>&1) || rc=$?
 echo "${output}"
 [[ "${rc}" -ne 0 ]] || fail "update of a read-only target succeeded"
 grep -qE "^(Error|Warning): " <<< "${output}" || fail "rsync error ${rc} was not reported"

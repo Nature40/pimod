@@ -176,8 +176,13 @@ UPDATED_TIMESTAMP=\"${updated_timestamp}\"
   rsync_section=$(echo "${rsync_section}" | sed 's/\${1:-[^}]*}/\${TARGET_DIR}/g')
   # Replace --read-batch=/tmp/... with --read-batch using the generated batch filename
   # Assumes script is executed from the directory where batch file is located
-  local batch_basename=$(basename "${batch_filename}")
-  rsync_section=$(echo "${rsync_section}" | sed "s|--read-batch=[^ ]*|--read-batch=\"${batch_basename}\"|g")
+  # The batch file name is shell-quoted, as it may contain any characters.
+  # rsync writes the temporary path either plain or single-quoted.
+  local batch_file="${batch_sh_file%.sh}"
+  local read_batch
+  read_batch="--read-batch=$(printf '%q' "$(basename "${batch_filename}")")"
+  rsync_section="${rsync_section//"--read-batch='${batch_file}'"/"${read_batch}"}"
+  rsync_section="${rsync_section//"--read-batch=${batch_file}"/"${read_batch}"}"
   
   # Build enhanced batch.sh script
   local enhanced_script="#!/usr/bin/env bash
