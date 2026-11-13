@@ -18,13 +18,13 @@ SHRINK() {
   loop=$(mount_image "${DEST_IMG}")
   local loop_device="/dev/mapper/${loop}p${IMG_ROOT}"
 
-  if ! e2fsck -pf "${loop_device}"; then
-    local err=$?
-    if [ "${err}" -gt 2 ]; then
-      echo -e "\033[0;31m### Error: File system check failed (${err}).\033[0m"
-      umount_image "${loop}"
-      return "${err}"
-    fi
+  # e2fsck exits with 1 or 2 when it corrected errors, which is fine here.
+  local err=0
+  e2fsck -pf "${loop_device}" || err=$?
+  if [ "${err}" -gt 2 ]; then
+    echo -e "\033[0;31m### Error: File system check failed (${err}).\033[0m"
+    umount_image "${loop}"
+    return "${err}"
   fi
 
   # Determine minimum filesystem size and add safety buffer
@@ -111,8 +111,10 @@ SHRINK() {
   fi
 
   # Shrink filesystem to target size
-  if ! resize2fs -p "${loop_device}" "${target_blocks}"; then
-    echo -e "\033[0;31m### Error: resize2fs failed ($?).\033[0m"
+  err=0
+  resize2fs -p "${loop_device}" "${target_blocks}" || err=$?
+  if [ "${err}" -ne 0 ]; then
+    echo -e "\033[0;31m### Error: resize2fs failed (${err}).\033[0m"
     umount_image "${loop}"
     return 12
   fi
@@ -126,14 +128,16 @@ SHRINK() {
   # Modify partition table: dump, update size field, restore
   echo "Shrinking partition to ${newsize_sectors} sectors"
 
-  if ! sfdisk -d "${DEST_IMG}" | awk -v part="${IMG_ROOT}" -v newsize="${newsize_sectors}" '
+  err=0
+  sfdisk -d "${DEST_IMG}" | awk -v part="${IMG_ROOT}" -v newsize="${newsize_sectors}" '
     /^[^#]/ && /start= *[0-9]+, *size= *[0-9]+/ {
       partcount++
       if (partcount == part) gsub(/size= *[0-9]+/, "size=" newsize)
     }
     { print }
-  ' | sfdisk --no-reread --force "${DEST_IMG}" 2>&1; then
-    echo -e "\033[0;31m### Error: sfdisk failed ($?).\033[0m"
+  ' | sfdisk --no-reread --force "${DEST_IMG}" 2>&1 || err=$?
+  if [ "${err}" -ne 0 ]; then
+    echo -e "\033[0;31m### Error: sfdisk failed (${err}).\033[0m"
     return 13
   fi
 
