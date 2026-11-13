@@ -53,7 +53,7 @@ jobs:
           submodules: recursive
 
       - name: Run pimod OpenWRT example
-        uses: Nature40/pimod@HEAD
+        uses: ./
         with:
           pifile: examples/RPi-OpenWRT.Pifile
 
